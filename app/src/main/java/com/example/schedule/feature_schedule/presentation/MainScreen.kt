@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.windowInsetsTopHeight
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -26,9 +27,11 @@ fun MainScreen() {
         topBar = {
             Row (
                 modifier = Modifier
+                    .background(MaterialTheme.colorScheme.primary)
                     .padding(0.dp, 55.dp, 0.dp, 0.dp)
                     .fillMaxWidth()
                     .fillMaxHeight(0.05f)
+
             ){
                 ScheduleHeaderComponent()
             }
@@ -39,6 +42,7 @@ fun MainScreen() {
         content = { innerPadding ->
             Column (
                 modifier = Modifier
+                    .background(MaterialTheme.colorScheme.primary)
                     .padding(innerPadding)
                     .fillMaxSize()
             ) {

@@ -2,6 +2,8 @@ package com.example.schedule.feature_schedule.presentation.schedule_menu.compone
 
 import android.util.Log
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,8 +19,16 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color.Companion.Black
 import androidx.compose.ui.graphics.Color.Companion.Blue
@@ -28,10 +38,15 @@ import androidx.compose.ui.graphics.Color.Companion.Red
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontVariation.width
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.example.schedule.ui.theme.CustomCyan
+import com.example.schedule.ui.theme.CustomRed
 import com.example.schedule.ui.theme.Purple40
 
 val TAG = "MonthLogDScreen"
+
 
 @Composable
 fun MonthScheduleGridComponent() {
@@ -57,7 +72,7 @@ fun MonthScheduleGridComponent() {
         modifier = Modifier
             .fillMaxWidth()
             .fillMaxHeight(0.4f)
-            .background(Gray, shape = RoundedCornerShape(20.dp)),
+            .background(MaterialTheme.colorScheme.secondary, shape = RoundedCornerShape(20.dp)),
         state = lazyListState,
         flingBehavior = snapBehavior
     ) {
@@ -69,21 +84,24 @@ fun MonthScheduleGridComponent() {
 
 @Composable
 fun GridItem(
-    columns: Int = 7,
 ) {
+    var selectedDate by remember { mutableStateOf<String>("") }
+    var selectedBorder by remember { mutableStateOf<String>("") }
+
+    val typography = MaterialTheme.typography
     val screenWidth = LocalConfiguration.current.screenWidthDp
-//    Log.d(TAG, "$alterna")
-    val daysOfWeek = listOf("S","M", "T", "W", "T", "F", "S")
+
+    val daysOfWeek = listOf("S", "M", "T", "W", "T", "F", "S")
     val daysNumber = (1..30).toList()
     val days = daysOfWeek + daysNumber
     val rows = days.chunked(7)
     var alterna = 0
+
     Box(
         modifier = Modifier
             .width(screenWidth.dp)
             .fillMaxHeight()
 //            .background(if (alterna % 2 == 0) Red else Green, RoundedCornerShape(20.dp))
-
     ) {
         Column(
             modifier = Modifier
@@ -91,26 +109,54 @@ fun GridItem(
 //                .background(Blue)
                 .fillMaxSize()
         ) {
-            rows.forEach { week ->
+            rows.forEachIndexed { weekIndex, week ->
                 Row(
                     modifier = Modifier
 //                        .background(if (alterna % 2 == 0) Red else Green)
                         .fillMaxWidth()
                 ) {
-                    week.forEach { day ->
-                        alterna++
-                        Box (
-                            modifier = Modifier
-//                                .weight(weight = 1f)
-                                .width(54.dp)
-                                .height(60.dp)
-//                                .background(if (alterna % 2 == 0) Black else White)
+                    week.forEachIndexed { dayIndex, day ->
+                        var heightValue = 52.dp
+                        var alignmentValue = Alignment.TopStart
+                        var colorValue = White
+                        var fontSizeValue = typography.displayMedium.fontSize
+                        if (weekIndex == 0) {
+                            heightValue = 30.dp
+                            alignmentValue = Alignment.BottomStart
+                            fontSizeValue = typography.displaySmall.fontSize
+                        }
 
+                        if (dayIndex == 0) colorValue = CustomRed
+
+
+                        alterna++
+                        Box(
+                            modifier = Modifier
+                                .width(54.dp)
+                                .height(heightValue)
+                                .then(
+                                    if (weekIndex != 0 && selectedBorder == day.toString()) {
+                                        Modifier.border(1.dp, CustomCyan, RoundedCornerShape(10.dp))
+                                    } else {
+                                        Modifier // sem borda adicional
+                                    }
+                                )
+//                                .background(if (alterna % 2 == 0) Black else White)
+                            ,contentAlignment = alignmentValue
                         ) {
                             Text(
                                 text = day.toString(),
+                                color = colorValue,
+                                fontSize = fontSizeValue,
                                 modifier = Modifier
-//                                    .background(Blue)
+                                    .padding(3.dp)
+                                    .fillMaxSize()
+                                    .clickable {
+                                        selectedBorder = day.toString()
+                                        if (selectedDate == day.toString()) {
+
+                                        }
+                                    }
                             )
                         }
                     }
