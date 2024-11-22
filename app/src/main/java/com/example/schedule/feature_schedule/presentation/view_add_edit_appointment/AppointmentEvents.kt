@@ -4,6 +4,7 @@ import com.example.schedule.feature_schedule.domain.model.Appointment
 
 sealed class AppointmentEvents {
     object OpenCreateAppointment: AppointmentEvents()
+    object CloseCreateAppointment: AppointmentEvents()
     object CloseAppointmentDetails: AppointmentEvents()
 
     data class OpenAppointmentDetails(val appointment: Appointment): AppointmentEvents()

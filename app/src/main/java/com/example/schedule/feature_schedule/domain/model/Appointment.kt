@@ -10,18 +10,25 @@ import androidx.compose.ui.graphics.Color.Companion.Black
 import androidx.compose.ui.graphics.Color.Companion.Cyan
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.example.schedule.feature_schedule.data.data_source.remote.AppointmentDto
+import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.LocalTime
 
-@Entity
 data class Appointment(
-    @PrimaryKey(autoGenerate = true) val id: Int = 0,
+    val id: Int,
     val title: String,
     val notes: String,
     val color: Int,
-    val startDate: Long,
-    val endDate: Long,
-    val repeat: Boolean,
-    val repeatOption: RepeatOptionsEnum,
+    val startDate: LocalDate,
+    val endDate: LocalDate,
+    val startTime: LocalTime,
+    val endTime: LocalTime,
+    val lastModified: LocalDateTime,
+    val isSynced: Boolean = false
+
+//    val repeat: Boolean,
+//    val repeatOption: RepeatOptionsEnum,
 ) {
     companion object{
         val noteColors = listOf(Blue, Red, Green, Gray, Yellow, Black, Cyan)

@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.serialization)
     id("kotlin-kapt")
     id("com.google.dagger.hilt.android")
 }
@@ -83,6 +84,18 @@ dependencies {
 
     // Hilt with Jetpack Compose integration
     implementation(libs.androidx.hilt.navigation.compose)
+
+    implementation(libs.navigation.compose)
+    implementation(libs.kotlinx.serialization.json)
+
+    // The view calendar library for Android
+    implementation("com.kizitonwose.calendar:view:2.6.0")
+
+    // The compose calendar library for Android
+    implementation("com.kizitonwose.calendar:compose:2.4.0")
+
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
 }
 
 kapt {
