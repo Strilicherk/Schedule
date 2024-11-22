@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.Flow
 class InsertLocalAppointmentUseCase(
     private val repository: AppointmentRepository
 ) {
-    suspend operator fun invoke(appointment: Appointment) {
-        repository.upsertLocalAppointment(appointment)
+    suspend operator fun invoke(appointmentList: List<Appointment>) {
+        repository.upsertLocalAppointment(appointmentList)
     }
 }

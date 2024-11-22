@@ -25,6 +25,21 @@ object AppointmentMapper {
         )
     }
 
+    fun AppointmentEntity.entityToDto(): AppointmentDto {
+        return AppointmentDto(
+            id = this.id,
+            title = this.title,
+            notes = this.notes,
+            color = this.color,
+            startDate = this.startDate,
+            endDate = this.endDate,
+            startTime = this.startTime,
+            endTime = this.endTime,
+            lastModified = this.lastModified,
+            isSynced = this.isSynced
+        )
+    }
+
     fun AppointmentEntity.entityToDomain(): Appointment {
         return Appointment(
             id = this.id,

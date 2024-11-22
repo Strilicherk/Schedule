@@ -9,12 +9,12 @@ import retrofit2.HttpException
 import java.io.IOException
 
 class SelectLocalAppointmentsOfTheYearUseCase (
-    private val repository: AppointmentRepository
+    private val repository: AppointmentRepository,
 ) {
-    operator fun invoke(fetchFromRemote: Boolean): Flow<Resource<List<Appointment>>> {
+    operator fun invoke(fetchFromRemote: Boolean, startOfYear: Long, endOfYear: Long): Flow<Resource<List<Appointment>>> {
         return flow {
             emit(Resource.Loading())
-            val localAppointments = repository.selectLocalAppointmentsOfTheYear()
+            val localAppointments = repository.selectLocalAppointmentsOfTheYear(startOfYear, endOfYear)
             emit(Resource.Success(localAppointments))
 
             val isDbEmpty = localAppointments.isEmpty()

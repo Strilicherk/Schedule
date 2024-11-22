@@ -3,96 +3,58 @@ package com.example.schedule.feature_schedule.data.repository
 import com.example.schedule.feature_schedule.common.Resource
 import com.example.schedule.feature_schedule.data.data_source.local.AppointmentDatabase
 import com.example.schedule.feature_schedule.data.data_source.remote.AppointmentApi
-import com.example.schedule.feature_schedule.data.mapper.toDomainModel
-import com.example.schedule.feature_schedule.data.mapper.toEntity
+import com.example.schedule.feature_schedule.data.mapper.AppointmentMapper.domainToEntity
+import com.example.schedule.feature_schedule.data.mapper.AppointmentMapper.dtoToEntity
+import com.example.schedule.feature_schedule.data.mapper.AppointmentMapper.entityToDomain
+import com.example.schedule.feature_schedule.data.mapper.AppointmentMapper.entityToDto
 import com.example.schedule.feature_schedule.domain.model.Appointment
 import com.example.schedule.feature_schedule.domain.repository.AppointmentRepository
-import kotlinx.coroutines.flow.Flow
-import okhttp3.Response
+import retrofit2.Response
+
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class AppointmentRepositoryImpl @Inject constructor(
-    val api: AppointmentApi,
-    val db: AppointmentDatabase
+    private val api: AppointmentApi,
+    private val db: AppointmentDatabase
 ) : AppointmentRepository {
     private val dao = db.dao
 
-    override suspend fun syncRemoteAppointments(): List<Appointment> {
-        return api.getAppointments().map { it.toEntity().toDomainModel()}
-    }
-
-    override suspend fun postUnsyncedRemoteAppointments(appointmentList: List<Appointment>): Response {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun updateRemoteAppointments(appointmentList: List<Appointment>): Response {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun deleteRemoteAppointments(appointmentList: List<Appointment>): Response {
-        TODO("Not yet implemented")
-    }
-
+    // local
     override suspend fun selectAppointments(): List<Appointment> {
-        return dao.selectAppointments().map { it.toDomainModel() }
+        return dao.selectAppointments().map { it.entityToDomain() }
     }
 
-    override suspend fun selectLocalAppointmentsOfTheYear(): List<Appointment> {
-        return dao.selectAppointmentsOfTheYear().map { it.toDomainModel() }
-    }
-
-
-    override suspend fun deleteLocalAppointment(appointment: Appointment) {
-        TODO("Not yet implemented")
+    override suspend fun selectLocalAppointmentsOfTheYear(startOfYear: Long, endOfYear: Long): List<Appointment> {
+        return dao.selectAppointmentsOfTheYear(startOfYear, endOfYear).map { it.entityToDomain() }
     }
 
     override suspend fun selectUnsyncedLocalAppointments(): List<Appointment> {
-        TODO("Not yet implemented")
+        return dao.selectUnsyncedAppointments().map { it.entityToDomain() }
     }
 
-    override suspend fun upsertLocalAppointment(appointment: Appointment) {
-        TODO("Not yet implemented")
+    override suspend fun upsertLocalAppointment(appointmentList: List<Appointment>) {
+        return appointmentList.forEach { dao.upsertAppointment(it.domainToEntity()) }
     }
 
+    override suspend fun deleteLocalAppointment(idList: List<Int>) {
+        return idList.forEach { dao.deleteAppointment(it) }
+    }
+
+    // remote
+    override suspend fun getRemoteAppointments(): List<Appointment> {
+        return api.getAppointments().map { it.dtoToEntity().entityToDomain()}
+    }
+
+    override suspend fun postUnsyncedRemoteAppointments(appointmentList: List<Appointment>): Response<Any> {
+        return api.postAppointments(appointmentList.map { it.domainToEntity().entityToDto() })
+    }
+
+    override suspend fun deleteRemoteAppointments(idList: List<Int>): Response<Any> {
+        for (id in idList) {
+            return api.deleteAppointment(id)
+        }
+        return Response.success("All appointments deleted")
+    }
 }
-
-
-//class AppointmentRemoteRepositoryImpl @Inject constructor(
-//    private val api: AppointmentApi,
-//) : AppointmentRemoteRepository {
-//    operator fun invoke(): Flow<Resource<List<Appointment>>> = flow{
-//        try {
-//            emit(Resource.Loading())
-//            val appointments = getAppointments().first()
-//            emit(Resource.Success(appointments))
-//        } catch (e: HttpException) {
-//            emit(Resource.Error(e.localizedMessage ?: "An unexpected error occurred."))
-//        } catch (e: IOException) {
-//            emit(Resource.Error("Couldn't reach server. Please check your internet connection."))
-//        }
-//    }
-//
-//    override suspend fun getAppointments(): Flow<List<Appointment>> = flow {
-//        val dtoList = api.getAppointments()
-//        emit(dtoList.toAppointmentList())
-//    }
-//}
-
-//class AppointmentLocalRepositoryImpl(
-//    private val dao: AppointmentDao
-//): AppointmentLocalRepository {
-//    override fun getAppointments(): Flow<List<Appointment>> {
-//        return dao.getAppointments()
-//    }
-//
-//    override suspend fun insertOrUpdateAppointment(appointment: Appointment) {
-//        return dao.insertOrUpdateAppointment(appointment)
-//    }
-//
-//    override suspend fun deleteAppointment(appointment: Appointment) {
-//        return dao.deleteAppointment(appointment)
-//    }
-//
-//}

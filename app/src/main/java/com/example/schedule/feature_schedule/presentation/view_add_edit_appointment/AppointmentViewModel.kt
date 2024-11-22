@@ -16,11 +16,6 @@ class AppointmentViewModel @Inject constructor(
 ): ViewModel() {
     val TAG = "Chamada API"
 
-    init {
-        val apiReturn = api.getAppointments()
-        Log.d(TAG, "$apiReturn")
-    }
-
 
     private var _state = mutableStateOf(AppointmentState())
     val state: State<AppointmentState> = _state

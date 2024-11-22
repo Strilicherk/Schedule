@@ -3,18 +3,23 @@ package com.example.schedule.feature_schedule.presentation.view_add_edit_appoint
 import androidx.compose.ui.graphics.Color
 import com.example.schedule.feature_schedule.domain.model.Appointment
 import com.example.schedule.feature_schedule.domain.model.RepeatOptionsEnum
+import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.LocalTime
 
 data class AppointmentState(
     val appointmentList: List<Appointment> = emptyList(),
     val appointment: Appointment = Appointment(
+        id = 1,
         title = "",
         notes = "",
         color = 1,
-//        repeat = false,
-//        repeatOption = RepeatOptionsEnum.NEVER,
-        endDate = "01-11-2024 07:00:00 AM",
-        startDate = "01-11-2024 10:00:00 AM"
+        startDate = LocalDate.now(),
+        endDate = LocalDate.now(),
+        startTime = LocalTime.now(),
+        endTime = LocalTime.now(),
+        lastModified = LocalDateTime.now(),
+        isSynced = false
     ),
 
     val title: String = "",

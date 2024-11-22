@@ -7,16 +7,16 @@ import com.example.schedule.feature_schedule.domain.use_case.appointment.local.U
 import com.example.schedule.feature_schedule.domain.use_case.appointment.remote.DeleteRemoteAppointmentUseCase
 import com.example.schedule.feature_schedule.domain.use_case.appointment.remote.GetRemoteAppointmentsUseCase
 import com.example.schedule.feature_schedule.domain.use_case.appointment.remote.PostUnsyncedAppointmentsUseCase
-import com.example.schedule.feature_schedule.domain.use_case.appointment.remote.UpdateRemoteAppointmentUseCase
+import javax.inject.Inject
+import javax.inject.Singleton
 
-data class AppointmentUseCases(
+@Singleton
+data class AppointmentUseCases @Inject constructor(
     val getRemoteAppointments: GetRemoteAppointmentsUseCase,
     val postRemoteAppointment: PostUnsyncedAppointmentsUseCase,
     val deleteRemoteAppointment: DeleteRemoteAppointmentUseCase,
-    val updateRemoteAppointments: UpdateRemoteAppointmentUseCase,
 
     val selectLocalAppointmentsOfTheYearUseCase: SelectLocalAppointmentsOfTheYearUseCase,
-    val selectUnsycedLocalAppointmentsUseCase: SelectUnsycedLocalAppointmentsUseCase,
     val insertLocalAppointmentUseCase: InsertLocalAppointmentUseCase,
     val deleteLocalAppointmentUseCase: DeleteLocalAppointmentUseCase,
     val updateLocalAppointments: UpsertRemoteAppointmentsIntoRoomUseCase,

@@ -14,7 +14,6 @@ import com.example.schedule.feature_schedule.domain.use_case.appointment.local.S
 import com.example.schedule.feature_schedule.domain.use_case.appointment.local.UpsertRemoteAppointmentsIntoRoomUseCase
 import com.example.schedule.feature_schedule.domain.use_case.appointment.remote.DeleteRemoteAppointmentUseCase
 import com.example.schedule.feature_schedule.domain.use_case.appointment.remote.PostUnsyncedAppointmentsUseCase
-import com.example.schedule.feature_schedule.domain.use_case.appointment.remote.UpdateRemoteAppointmentUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -48,24 +47,24 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideScheduleRepository(api: AppointmentApi, db: AppointmentDatabase): AppointmentRepository {
+    fun provideScheduleRepository(
+        api: AppointmentApi,
+        db: AppointmentDatabase
+    ): AppointmentRepository {
         return AppointmentRepositoryImpl(api, db)
     }
 
     @Provides
     @Singleton
     fun providesAppointmentUseCases(repository: AppointmentRepository): AppointmentUseCases {
-       return AppointmentUseCases(
-           getRemoteAppointments = GetRemoteAppointmentsUseCase(PostUnsyncedAppointmentsUseCase(repository), UpsertRemoteAppointmentsIntoRoomUseCase(repository), repository),
-           postRemoteAppointment = PostUnsyncedAppointmentsUseCase(repository),
-           deleteRemoteAppointment = DeleteRemoteAppointmentUseCase(repository),
-           updateRemoteAppointments = UpdateRemoteAppointmentUseCase(repository),
-
-           selectLocalAppointmentsOfTheYearUseCase = SelectLocalAppointmentsOfTheYearUseCase(repository),
-           selectUnsycedLocalAppointmentsUseCase = SelectUnsycedLocalAppointmentsUseCase(repository),
-           insertLocalAppointmentUseCase = InsertLocalAppointmentUseCase(repository),
-           deleteLocalAppointmentUseCase = DeleteLocalAppointmentUseCase(repository),
-           updateLocalAppointments = UpsertRemoteAppointmentsIntoRoomUseCase(repository),
-       )
+        return AppointmentUseCases(
+            getRemoteAppointments = GetRemoteAppointmentsUseCase(repository),
+            postRemoteAppointment = PostUnsyncedAppointmentsUseCase(repository),
+            deleteRemoteAppointment = DeleteRemoteAppointmentUseCase(repository),
+            selectLocalAppointmentsOfTheYearUseCase = SelectLocalAppointmentsOfTheYearUseCase(repository),
+            insertLocalAppointmentUseCase = InsertLocalAppointmentUseCase(repository),
+            deleteLocalAppointmentUseCase = DeleteLocalAppointmentUseCase(repository),
+            updateLocalAppointments = UpsertRemoteAppointmentsIntoRoomUseCase(repository)
+        )
     }
 }

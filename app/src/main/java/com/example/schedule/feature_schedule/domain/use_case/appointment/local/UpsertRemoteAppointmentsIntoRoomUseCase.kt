@@ -24,15 +24,15 @@ class UpsertRemoteAppointmentsIntoRoomUseCase @Inject constructor(
                         val localAppointments = repository.selectAppointments()
 
                         val appointmentsToSync = remoteAppointments.filter { api ->
-                            localAppointments.none { local -> local.id == api.id } || // Novo
-                                    localAppointments.any { local -> local.id == api.id && api.lastModified > local.lastModified } // Atualizado
+                            localAppointments.none { local -> local.id == api.id } ||
+                                    localAppointments.any { local -> local.id == api.id && api.lastModified > local.lastModified }
                         }
 
-                        appointmentsToSync.forEach { repository.upsertLocalAppointment(it) }
+                        repository.upsertLocalAppointment(appointmentsToSync)
 
                         emit(Resource.Success(true))
                     } else {
-                        emit(Resource.Success(false)) // Nada a sincronizar
+                        emit(Resource.Success(false))
                     }
                 }
                 is Resource.Error -> {
