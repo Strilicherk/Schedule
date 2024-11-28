@@ -25,10 +25,7 @@ class AppointmentRepositoryImpl @Inject constructor(
         return dao.selectAppointments().map { it.entityToDomain() }
     }
 
-    override suspend fun selectLocalAppointmentsOfTheYear(
-        startOfYear: Long,
-        endOfYear: Long
-    ): List<Appointment> {
+    override suspend fun selectLocalAppointmentsOfTheYear(startOfYear: Long, endOfYear: Long): List<Appointment> {
         return dao.selectAppointmentsOfTheYear(startOfYear, endOfYear).map { it.entityToDomain() }
     }
 
@@ -60,23 +57,21 @@ class AppointmentRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun postUnsyncedRemoteAppointments(appointmentList: List<Appointment>): MutableMap<Appointment, Boolean> {
-        val results = mutableMapOf<Appointment, Boolean>()
+    override suspend fun postUnsyncedRemoteAppointments(appointmentList: List<Appointment>): MutableMap<Int, Any> {
+        val results = mutableMapOf<Int, Any>()
         for (appointment in appointmentList) {
             try {
                 val response = api.postAppointments(appointment.domainToEntity().entityToDto())
                 if (response.isSuccessful) {
-                    results[response.body()!!.dtoToEntity().entityToDomain()] = response.isSuccessful
+                    results[response.body()!!.dtoToEntity().entityToDomain().id] = response.isSuccessful
                 } else {
-                    results[response.body()!!.dtoToEntity().entityToDomain()] = response.isSuccessful
-                    throw HttpException(response)
+                    results[response.body()!!.dtoToEntity().entityToDomain().id] = response.code()
                 }
             } catch (e: HttpException) {
-                results[appointment] = false
-                throw HttpException(e.response()!!)
+                results[appointment.id] = e.code()
             } catch (e: IOException) {
-                results[appointment] = false
-                throw IOException("Message: ${e.message}")
+                val errorMessage = e.message ?: "Unknown I/O error occurred"
+                results[appointment.id] = errorMessage
             }
         }
         return results
@@ -91,14 +86,11 @@ class AppointmentRepositoryImpl @Inject constructor(
                     results[id] = response.isSuccessful
                 } else {
                     results[id] = response.isSuccessful
-                    throw HttpException(response)
                 }
             } catch (e: HttpException) {
                 results[id] = false
-                throw HttpException(e.response()!!)
             } catch (e: IOException) {
                 results[id] = false
-                throw IOException("Message: ${e.message}")
             }
         }
         return results

@@ -25,8 +25,6 @@ import java.time.LocalTime
 class GetRemoteAppointmentsUseCaseTest {
     private lateinit var repository: AppointmentRepository
     private lateinit var useCase: GetRemoteAppointmentsUseCase
-    private val TAG = "Unit Test Debug"
-
 
     @BeforeEach
     fun setup() {
@@ -77,7 +75,7 @@ class GetRemoteAppointmentsUseCaseTest {
     }
 
     @Test
-    @DisplayName("should emit Loading and Error when IOException occurs")
+    @DisplayName("Should emit Loading and Error when IOException occurs")
     fun `should emit Loading and Error when IOException occurs`() = runTest {
         coEvery { repository.getRemoteAppointments() } throws IOException("Device is offline")
 
@@ -87,26 +85,26 @@ class GetRemoteAppointmentsUseCaseTest {
         assertTrue(emissions[0] is Resource.Loading)
         assertTrue(emissions[1] is Resource.Error)
         assertEquals("I/O Exception: Device is offline", (emissions[1] as Resource.Error).message)
+
+        coVerify(exactly = 1) { repository.getRemoteAppointments() }
     }
 
     @Test
+    @DisplayName("Should emit Loading and Error when HttpException occurs")
     fun `should emit Loading and Error when HttpException occurs`() = runTest {
-        coEvery { repository.getRemoteAppointments() } throws HttpException(
-            error<Any>(404, ResponseBody.create(null, "Endpoint not found"))
-        )
+        val responseBody = ResponseBody.create(null, "Endpoint not found")
+        val response = error<Any>(404, responseBody)
+        val httpException = HttpException(response)
+
+        coEvery { repository.getRemoteAppointments() } throws httpException
 
         val emissions = useCase().toList()
 
         assertEquals(2, emissions.size)
         assertTrue(emissions[0] is Resource.Loading)
         assertTrue(emissions[1] is Resource.Error)
+        assertEquals("HTTP Exception: 404 - Endpoint not found", (emissions[1] as Resource.Error).message)
 
-        println("01: " + emissions[1].message)
-        println("02: " + (emissions[1] as Resource.Error).message)
-
-        assertEquals(
-            "HTTP Exception: 404 - Endpoint not found",
-            (emissions[1] as Resource.Error).message
-        )
+        coVerify(exactly = 1) { repository.getRemoteAppointments() }
     }
 }

@@ -14,6 +14,6 @@ interface AppointmentRepository {
 
     // remote
     suspend fun getRemoteAppointments(): List<Appointment>
-    suspend fun postUnsyncedRemoteAppointments(appointmentList: List<Appointment>): MutableMap<Appointment, Boolean>
+    suspend fun postUnsyncedRemoteAppointments(appointmentList: List<Appointment>): MutableMap<Int, Any>
     suspend fun deleteRemoteAppointments(idList: List<Int>): MutableMap<Int, Boolean>
 }

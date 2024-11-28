@@ -21,10 +21,22 @@ class PostUnsyncedAppointmentsUseCase(
             }
 
             val res = repository.postUnsyncedRemoteAppointments(unsyncedLocalAppointments)
+            val successSync = mutableListOf<Int>()
+            res.filter { (key, value) ->
+                if (value.toString().toBoolean()) {
+                    successSync.add(key)
+                    true
+                } else {
+                    false
+                }
+            }
 
-            emit(Resource.Success(true))
+            if (res.size == successSync.size) {
+                emit(Resource.Success(true))
+            } else {
+                emit(Resource.Error("Failed to sync some appointments", false))
+            }
             return@flow
-
         }
     }
 }
