@@ -1,5 +1,6 @@
 package com.example.schedule.feature_schedule.data.data_source.remote
 
+import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -10,13 +11,13 @@ import retrofit2.http.Path
 interface AppointmentApi {
 
     @GET("Appointments")
-    suspend fun getAppointments(): List<AppointmentDto>
+    suspend fun getAppointments(): Response<List<AppointmentDto>>
 
     @POST("Appointments")
-    suspend fun postAppointments(@Body appointments: List<AppointmentDto>): Response<Any>
+    suspend fun postAppointments(@Body appointment: AppointmentDto): Response<AppointmentDto>
 
     @DELETE("Appointments/{id}")
-    suspend fun deleteAppointment(@Path("id") id: Int): Response<Any>
+    suspend fun deleteAppointment(@Path("id") id: Int): Response<AppointmentDto>
 
     companion object {
         const val BASE_URL = "https://66f32e6971c84d8058780e51.mockapi.io/retrofit/api/v1/"

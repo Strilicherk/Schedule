@@ -23,11 +23,12 @@ class GetRemoteAppointmentsUseCase @Inject constructor(
                 emit(Resource.Success(remoteAppointments))
             } catch (e: IOException) {
                 e.printStackTrace()
-                emit(Resource.Error("I/O error: ${e.message}"))
+                emit(Resource.Error("I/O Exception: ${e.message}"))
             } catch (e: HttpException) {
                 e.printStackTrace()
-                emit(Resource.Error("Network error: ${e.message()}"))
+                emit(Resource.Error("HTTP Exception: ${e.code()} - ${e.message}"))
             }
         }
     }
 }
+

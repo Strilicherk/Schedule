@@ -20,17 +20,11 @@ class PostUnsyncedAppointmentsUseCase(
                 return@flow
             }
 
-            try {
-                repository.postUnsyncedRemoteAppointments(unsyncedLocalAppointments)
-                emit(Resource.Success(true))
-                return@flow
-            } catch (e: HttpException) {
-                e.printStackTrace()
-                emit(Resource.Error("Network error: ${e.message()}"))
-            } catch (e: IOException) {
-                e.printStackTrace()
-                emit(Resource.Error("I/O error: ${e.message}"))
-            }
+            val res = repository.postUnsyncedRemoteAppointments(unsyncedLocalAppointments)
+
+            emit(Resource.Success(true))
+            return@flow
+
         }
     }
 }

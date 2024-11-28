@@ -1,6 +1,7 @@
 package com.example.schedule.feature_schedule.domain.repository
 
 import com.example.schedule.feature_schedule.domain.model.Appointment
+import retrofit2.Call
 import retrofit2.Response
 
 interface AppointmentRepository {
@@ -13,6 +14,6 @@ interface AppointmentRepository {
 
     // remote
     suspend fun getRemoteAppointments(): List<Appointment>
-    suspend fun postUnsyncedRemoteAppointments(appointmentList: List<Appointment>): Response<Any>
-    suspend fun deleteRemoteAppointments(idList: List<Int>): Response<Any>
+    suspend fun postUnsyncedRemoteAppointments(appointmentList: List<Appointment>): MutableMap<Appointment, Boolean>
+    suspend fun deleteRemoteAppointments(idList: List<Int>): MutableMap<Int, Boolean>
 }
