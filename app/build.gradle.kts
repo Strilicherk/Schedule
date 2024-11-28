@@ -3,10 +3,10 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.compose.compiler)
-    id("kotlin-kapt")
+    id("com.google.devtools.ksp")
     id("com.google.dagger.hilt.android")
+    id("androidx.room")
 }
-
 
 android {
     namespace = "com.example.schedule"
@@ -49,6 +49,10 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+    room {
+        schemaDirectory("$projectDir/schemas")
+    }
+
 }
 
 dependencies {
@@ -61,31 +65,34 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.kotlinx.coroutines.android)
-    implementation(libs.hilt.android)
-    implementation (libs.androidx.foundation)
+    implementation(libs.androidx.foundation)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
-    implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.navigation.compose)
     implementation(libs.kotlinx.serialization.json)
-    implementation(libs.androidx.room.runtime)
-
-    //noinspection KaptUsageInsteadOfKsp
-    kapt(libs.androidx.room.compiler)
-    kapt(libs.hilt.android.compiler)
-    implementation(libs.androidx.room.ktx)
-    // Retrofit
-    implementation(libs.retrofit)
-    implementation(libs.converter.gson)
-
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
-
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
+    // Hilt
+    ksp(libs.hilt.android.compiler)
+    ksp(libs.dagger.compiler) // Dagger compiler
+    ksp(libs.hilt.compiler)   // Hilt compíler
+    implementation(libs.hilt.android)
+    implementation(libs.androidx.hilt.navigation.compose)
+
+    // Room
     annotationProcessor(libs.androidx.room.compiler)
+    ksp(libs.androidx.room.compiler)
+    implementation(libs.androidx.room.ktx)
+    implementation(libs.androidx.room.runtime)
+    testImplementation(libs.androidx.room.testing)
+
+    // Retrofit
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
 
     // JUnit 5
     testImplementation(libs.junit.jupiter)
@@ -96,12 +103,9 @@ dependencies {
 
     // Mockk
     testImplementation(libs.test.mockk)
+
     // Teste de coroutines
     testImplementation(libs.kotlinx.coroutines.test)
-}
-
-kapt {
-    correctErrorTypes = true
 }
 
 tasks.withType<Test> {
