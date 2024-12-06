@@ -11,8 +11,10 @@ class SyncAppointmentsUseCase @Inject constructor(
     private val upsertRemoteAppointmentsIntoRoomUseCase: UpsertRemoteAppointmentsIntoRoomUseCase
 ) {
     operator suspend fun invoke() {
-        val isDataAlreadySync = postUnsyncedAppointmentsUseCase.invoke()
         val remoteAppointmentList = getRemoteAppointmentsUseCase.invoke()
+        // delete
+        // resolve os conflitos de ids antes de subir
+        val isDataAlreadySync = postUnsyncedAppointmentsUseCase.invoke()
         val isAppSync = upsertRemoteAppointmentsIntoRoomUseCase.invoke(remoteAppointmentList)
     }
 }

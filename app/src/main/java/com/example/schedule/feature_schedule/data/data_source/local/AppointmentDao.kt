@@ -1,7 +1,6 @@
 package com.example.schedule.feature_schedule.data.data_source.local
 
 import androidx.room.Dao
-import androidx.room.Delete
 import androidx.room.Query
 import androidx.room.Upsert
 
@@ -25,8 +24,11 @@ interface AppointmentDao {
     suspend fun selectUnsyncedAppointments(): List<AppointmentEntity>
 
     @Upsert
-    suspend fun upsertAppointment(appointment: AppointmentEntity)
+    suspend fun upsertAppointment(appointment: AppointmentEntity): Long
 
     @Query("DELETE FROM APPOINTMENT WHERE Id = :id")
-    suspend fun deleteAppointment(id: Int)
+    suspend fun deleteAppointment(id: Int): Int
+
+    @Query("SELECT MAX(id) FROM APPOINTMENT")
+    suspend fun getLastIdFromRoom(): Int
 }

@@ -21,7 +21,8 @@ object AppointmentMapper {
             startTime = this.startTime,
             endTime = this.endTime,
             lastModified = this.lastModified,
-            isSynced = this.isSynced
+            isSynced = this.isSynced,
+            hasBeenSynced = this.hasBeenSynced
         )
     }
 
@@ -36,7 +37,8 @@ object AppointmentMapper {
             startTime = this.startTime,
             endTime = this.endTime,
             lastModified = this.lastModified,
-            isSynced = this.isSynced
+            isSynced = this.isSynced,
+            hasBeenSynced = this.hasBeenSynced
         )
     }
 
@@ -51,7 +53,8 @@ object AppointmentMapper {
             startTime = LocalTime.parse(this.startTime),
             endTime = LocalTime.parse(this.endTime),
             lastModified = converter.fromTimestamp(this.lastModified),
-            isSynced = this.isSynced
+            isSynced = this.isSynced,
+            hasBeenSynced = this.hasBeenSynced
         )
     }
 
@@ -66,7 +69,8 @@ object AppointmentMapper {
             startTime = this.startTime.toString(),
             endTime = this.endTime.toString(),
             lastModified = converter.toTimestamp(this.lastModified),
-            isSynced = this.isSynced
+            isSynced = this.isSynced,
+            hasBeenSynced = this.hasBeenSynced
         )
     }
 }

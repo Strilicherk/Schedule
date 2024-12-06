@@ -6,8 +6,11 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import retrofit2.HttpException
 import java.io.IOException
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class PostUnsyncedAppointmentsUseCase(
+@Singleton
+class PostUnsyncedAppointmentsUseCase @Inject constructor(
     private val repository: AppointmentRepository
 ) {
     operator fun invoke(): Flow<Resource<Boolean>> {

@@ -13,5 +13,6 @@ data class AppointmentDto(
     val startTime: String,
     val endTime: String,
     val lastModified: Long,
-    val isSynced: Boolean
+    val isSynced: Boolean,
+    val hasBeenSynced: Boolean
 )

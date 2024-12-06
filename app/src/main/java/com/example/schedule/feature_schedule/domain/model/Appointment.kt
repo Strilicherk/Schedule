@@ -24,9 +24,9 @@ data class Appointment(
     val endDate: LocalDate,
     val startTime: LocalTime,
     val endTime: LocalTime,
-    val lastModified: LocalDateTime,
-    val isSynced: Boolean = false
-
+    val lastModified: LocalDateTime = LocalDateTime.now(),
+    val isSynced: Boolean = false,
+    val hasBeenSynced: Boolean = false
 //    val repeat: Boolean,
 //    val repeatOption: RepeatOptionsEnum,
 ) {

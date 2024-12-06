@@ -1,5 +1,7 @@
 package com.example.schedule.feature_schedule.data.repository
 
+import com.example.schedule.feature_schedule.common.Resource
+import com.example.schedule.feature_schedule.data.data_source.cache.AppointmentCache
 import com.example.schedule.feature_schedule.data.data_source.local.AppointmentDatabase
 import com.example.schedule.feature_schedule.data.data_source.remote.AppointmentApi
 import com.example.schedule.feature_schedule.data.mapper.AppointmentMapper.domainToEntity
@@ -16,7 +18,8 @@ import javax.inject.Singleton
 @Singleton
 class AppointmentRepositoryImpl @Inject constructor(
     private val api: AppointmentApi,
-    private val db: AppointmentDatabase
+    private val db: AppointmentDatabase,
+    private val cache: AppointmentCache
 ) : AppointmentRepository {
     private val dao = db.dao
 
@@ -25,7 +28,10 @@ class AppointmentRepositoryImpl @Inject constructor(
         return dao.selectAppointments().map { it.entityToDomain() }
     }
 
-    override suspend fun selectLocalAppointmentsOfTheYear(startOfYear: Long, endOfYear: Long): List<Appointment> {
+    override suspend fun selectLocalAppointmentsOfTheYear(
+        startOfYear: Long,
+        endOfYear: Long
+    ): List<Appointment> {
         return dao.selectAppointmentsOfTheYear(startOfYear, endOfYear).map { it.entityToDomain() }
     }
 
@@ -33,12 +39,29 @@ class AppointmentRepositoryImpl @Inject constructor(
         return dao.selectUnsyncedAppointments().map { it.entityToDomain() }
     }
 
-    override suspend fun upsertLocalAppointment(appointmentList: List<Appointment>) {
-        return appointmentList.forEach { dao.upsertAppointment(it.domainToEntity()) }
+    override suspend fun upsertLocalAppointment(appointment: Appointment): Long {
+        return try {
+            dao.upsertAppointment(appointment.domainToEntity())
+        } catch (e: Exception) {
+            throw Exception(
+                "Failed to upsert appointment with ID: ${appointment.id}. Error: ${e.message}",
+                e
+            )
+        }
     }
 
-    override suspend fun deleteLocalAppointment(idList: List<Int>) {
-        return idList.forEach { dao.deleteAppointment(it) }
+    override suspend fun deleteLocalAppointment(idList: List<Int>): Int {
+        return idList.forEach { dao.deleteAppointment(it) }.toString().toInt()
+    }
+
+    override suspend fun getLastIdFromRoom(): Int {
+        return try {
+            dao.getLastIdFromRoom()
+        } catch (e: IOException) {
+            throw IOException("IO Exception: ${e.message}")
+        } catch (e: Exception) {
+            throw Exception("IO Exception: ${e.message}")
+        }
     }
 
     // remote
@@ -46,7 +69,8 @@ class AppointmentRepositoryImpl @Inject constructor(
         return try {
             val res = api.getAppointments()
             if (res.isSuccessful) {
-                api.getAppointments().body()?.map { it.dtoToEntity().entityToDomain() } ?: throw Exception("Empty response body")
+                api.getAppointments().body()?.map { it.dtoToEntity().entityToDomain() }
+                    ?: throw Exception("Empty response body")
             } else {
                 throw HttpException(res)
             }
@@ -63,7 +87,8 @@ class AppointmentRepositoryImpl @Inject constructor(
             try {
                 val response = api.postAppointments(appointment.domainToEntity().entityToDto())
                 if (response.isSuccessful) {
-                    results[response.body()!!.dtoToEntity().entityToDomain().id] = response.isSuccessful
+                    results[response.body()!!.dtoToEntity().entityToDomain().id] =
+                        response.isSuccessful
                 } else {
                     results[response.body()!!.dtoToEntity().entityToDomain().id] = response.code()
                 }
@@ -94,5 +119,66 @@ class AppointmentRepositoryImpl @Inject constructor(
             }
         }
         return results
+    }
+
+    // cache
+    override suspend fun addAppointmentToCache(appointment: Appointment): Resource<Boolean> {
+        return try {
+            cache.addAppointmentToCache(appointment)
+        } catch (e: Exception) {
+            throw Exception("Exception: ${e.message}")
+        }
+    }
+
+    override suspend fun loadAppointmentsFromRepositoryToCache(): Resource<Boolean> {
+        return try {
+            cache.loadAppointmentsFromRepositoryToCache()
+        } catch (e: Exception) {
+            throw Exception("Exception: ${e.message}")
+        }
+    }
+
+    override suspend fun getAllCachedAppointments(): Map<Long, List<Appointment>> {
+        return try {
+            cache.getAllCachedAppointments()
+        } catch (e: Exception) {
+            throw Exception("Exception: ${e.message}")
+        }
+    }
+
+    override suspend fun updateCachedAppointment(appointment: Appointment): Resource<Boolean> {
+        return try {
+            cache.updateCachedAppointment(appointment)
+        } catch (e: Exception) {
+            throw Exception("Exception: ${e.message}")
+        }
+    }
+
+    override suspend fun clearAppointmentCache() {
+        cache.clearAppointmentCache()
+    }
+
+    override suspend fun deleteAppointmentFromCache(appointment: Appointment): Resource<Boolean> {
+        return try {
+            cache.deleteAppointmentFromCache(appointment)
+        } catch (e: Exception) {
+            throw Exception("Exception: ${e.message}")
+        }
+    }
+
+    override suspend fun getLastIdInCache(): Int? {
+        return try {
+            cache.getLastIdInCache()
+        } catch (e: Exception) {
+            throw Exception("Exception: ${e.message}")
+        }
+    }
+
+    override suspend fun saveLastIdInCache(id: Int): Int {
+        return try {
+            cache.saveLastIdInCache(id)
+        } catch (e: Exception) {
+            throw Exception("Exception: ${e.message}")
+        }
     }
 }

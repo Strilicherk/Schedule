@@ -14,7 +14,8 @@ data class AppointmentEntity(
     val startTime: String,
     val endTime: String,
     val lastModified: Long,
-    val isSynced: Boolean = false
+    val isSynced: Boolean = false,
+    val hasBeenSynced: Boolean = false
 ) {
 
 }

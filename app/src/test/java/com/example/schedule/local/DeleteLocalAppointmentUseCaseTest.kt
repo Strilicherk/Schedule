@@ -1,0 +1,3 @@
+package com.example.schedule.local
+
+class DeleteLocalAppointmentUseCaseTest

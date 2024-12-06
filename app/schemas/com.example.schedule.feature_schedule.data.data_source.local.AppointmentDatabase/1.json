@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "2e23ad0eff660f99c46ca940f1d5a73e",
+    "identityHash": "69f73fdfcad80b8ac67449d78833bc7c",
     "entities": [
       {
         "tableName": "Appointment",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `title` TEXT NOT NULL, `notes` TEXT NOT NULL, `color` INTEGER NOT NULL, `startDate` INTEGER NOT NULL, `endDate` INTEGER NOT NULL, `startTime` TEXT NOT NULL, `endTime` TEXT NOT NULL, `lastModified` INTEGER NOT NULL, `isSynced` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `title` TEXT NOT NULL, `notes` TEXT NOT NULL, `color` INTEGER NOT NULL, `startDate` INTEGER NOT NULL, `endDate` INTEGER NOT NULL, `startTime` TEXT NOT NULL, `endTime` TEXT NOT NULL, `lastModified` INTEGER NOT NULL, `isSynced` INTEGER NOT NULL, `hasBeenSynced` INTEGER NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -67,6 +67,12 @@
             "columnName": "isSynced",
             "affinity": "INTEGER",
             "notNull": true
+          },
+          {
+            "fieldPath": "hasBeenSynced",
+            "columnName": "hasBeenSynced",
+            "affinity": "INTEGER",
+            "notNull": true
           }
         ],
         "primaryKey": {
@@ -82,7 +88,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '2e23ad0eff660f99c46ca940f1d5a73e')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '69f73fdfcad80b8ac67449d78833bc7c')"
     ]
   }
 }
