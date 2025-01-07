@@ -9,13 +9,13 @@ import javax.inject.Singleton
 class GetLastIdFromRoomUseCase @Inject constructor(
     private val repository: AppointmentRepository,
 ) {
-    suspend operator fun invoke(): Int {
-        return try {
-            repository.getLastIdFromRoom()
-        } catch (e: IOException) {
-            throw IOException("Exception: ${e.message}")
-        } catch (e: Exception) {
-            throw Exception("Exception: ${e.message}")
-        }
-    }
+//    suspend operator fun invoke(): Int {
+//        return try {
+//            repository.getLastIdFromRoom()
+//        } catch (e: IOException) {
+//            throw IOException("Exception: ${e.message}")
+//        } catch (e: Exception) {
+//            throw Exception("Exception: ${e.message}")
+//        }
+//    }
 }

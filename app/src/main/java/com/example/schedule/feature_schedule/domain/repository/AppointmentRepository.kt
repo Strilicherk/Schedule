@@ -4,6 +4,7 @@ import com.example.schedule.feature_schedule.common.Resource
 import com.example.schedule.feature_schedule.domain.model.Appointment
 import retrofit2.Call
 import retrofit2.Response
+import java.time.LocalDate
 
 interface AppointmentRepository {
     // local
@@ -15,7 +16,7 @@ interface AppointmentRepository {
     suspend fun selectUnsyncedLocalAppointments(): List<Appointment>
     suspend fun upsertLocalAppointment(appointment: Appointment): Long
     suspend fun deleteLocalAppointment(idList: List<Int>): Int
-    suspend fun getLastIdFromRoom(): Int
+//    suspend fun getLastIdFromRoom(): Int
 
     // remote
     suspend fun getRemoteAppointments(): List<Appointment>
@@ -24,11 +25,15 @@ interface AppointmentRepository {
 
     // cache
     suspend fun addAppointmentToCache(appointment: Appointment): Resource<Boolean>
-    suspend fun getAllCachedAppointments(): Map<Long, List<Appointment>>
-    suspend fun updateCachedAppointment(appointment: Appointment): Resource<Boolean>
-    suspend fun clearAppointmentCache()
-    suspend fun loadAppointmentsFromRepositoryToCache(): Resource<Boolean>
+    suspend fun addAppointmentToByDayCache(date: Int, appointmentId: Int): Resource<Boolean>
+    suspend fun getAllAppointmentsFromCache(): Map<Int, Appointment>
+    suspend fun getAllAppointmentsFromByDayCache(): Map<Int, List<Int>>
+    suspend fun getAppointmentById(id: Int): Appointment?
+    suspend fun getLastIdInCache(): Int
+    suspend fun updateAppointmentInCache(appointment: Appointment): Resource<Boolean>
     suspend fun deleteAppointmentFromCache(appointment: Appointment): Resource<Boolean>
-    suspend fun saveLastIdInCache(id: Int): Int
-    suspend fun getLastIdInCache(): Int?
+    suspend fun deleteAppointmentFromByDayCache(date: Int, id: Int): Resource<Boolean>
+    suspend fun clearCache()
+//    suspend fun saveLastIdInCache(id: Int): Int?
+
 }

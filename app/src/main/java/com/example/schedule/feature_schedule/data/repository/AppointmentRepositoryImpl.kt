@@ -28,10 +28,7 @@ class AppointmentRepositoryImpl @Inject constructor(
         return dao.selectAppointments().map { it.entityToDomain() }
     }
 
-    override suspend fun selectLocalAppointmentsOfTheYear(
-        startOfYear: Long,
-        endOfYear: Long
-    ): List<Appointment> {
+    override suspend fun selectLocalAppointmentsOfTheYear(startOfYear: Long, endOfYear: Long): List<Appointment> {
         return dao.selectAppointmentsOfTheYear(startOfYear, endOfYear).map { it.entityToDomain() }
     }
 
@@ -44,8 +41,7 @@ class AppointmentRepositoryImpl @Inject constructor(
             dao.upsertAppointment(appointment.domainToEntity())
         } catch (e: Exception) {
             throw Exception(
-                "Failed to upsert appointment with ID: ${appointment.id}. Error: ${e.message}",
-                e
+                "Failed to upsert appointment with ID: ${appointment.id}. Error: ${e.message}", e
             )
         }
     }
@@ -54,15 +50,15 @@ class AppointmentRepositoryImpl @Inject constructor(
         return idList.forEach { dao.deleteAppointment(it) }.toString().toInt()
     }
 
-    override suspend fun getLastIdFromRoom(): Int {
-        return try {
-            dao.getLastIdFromRoom()
-        } catch (e: IOException) {
-            throw IOException("IO Exception: ${e.message}")
-        } catch (e: Exception) {
-            throw Exception("IO Exception: ${e.message}")
-        }
-    }
+//    override suspend fun getLastIdFromRoom(): Int {
+//        return try {
+//            dao.getLastIdFromRoom()
+//        } catch (e: IOException) {
+//            throw IOException("IO Exception: ${e.message}")
+//        } catch (e: Exception) {
+//            throw Exception("IO Exception: ${e.message}")
+//        }
+//    }
 
     // remote
     override suspend fun getRemoteAppointments(): List<Appointment> {
@@ -125,60 +121,76 @@ class AppointmentRepositoryImpl @Inject constructor(
     override suspend fun addAppointmentToCache(appointment: Appointment): Resource<Boolean> {
         return try {
             cache.addAppointmentToCache(appointment)
+            Resource.Success(true)
+        } catch (e: IllegalArgumentException) {
+            Resource.Error("IllegalArgumentException: ${e.message ?: "Unknown Error"}")
         } catch (e: Exception) {
-            throw Exception("Exception: ${e.message}")
+            Resource.Error("Exception: ${e.message ?: "Unknown Error"}")
         }
     }
 
-    override suspend fun loadAppointmentsFromRepositoryToCache(): Resource<Boolean> {
+    override suspend fun addAppointmentToByDayCache(date: Int, appointmentId: Int): Resource<Boolean> {
         return try {
-            cache.loadAppointmentsFromRepositoryToCache()
+            cache.addAppointmentToByDayCache(date, appointmentId)
+            Resource.Success(true)
+        } catch (e: IllegalArgumentException) {
+            Resource.Error("IllegalArgumentException: ${e.message ?: "Unknown Error"}")
         } catch (e: Exception) {
-            throw Exception("Exception: ${e.message}")
+            Resource.Error("Exception: ${e.message ?: "Unknown Error"}")
         }
     }
 
-    override suspend fun getAllCachedAppointments(): Map<Long, List<Appointment>> {
-        return try {
-            cache.getAllCachedAppointments()
-        } catch (e: Exception) {
-            throw Exception("Exception: ${e.message}")
-        }
+    override suspend fun getAllAppointmentsFromCache(): Map<Int, Appointment> {
+        return cache.getAllAppointmentsFromCache()
     }
 
-    override suspend fun updateCachedAppointment(appointment: Appointment): Resource<Boolean> {
-        return try {
-            cache.updateCachedAppointment(appointment)
-        } catch (e: Exception) {
-            throw Exception("Exception: ${e.message}")
-        }
+    override suspend fun getAllAppointmentsFromByDayCache(): Map<Int, List<Int>> {
+        return cache.getAllAppointmentsFromByDayCache()
     }
 
-    override suspend fun clearAppointmentCache() {
-        cache.clearAppointmentCache()
+    override suspend fun getAppointmentById(id: Int): Appointment {
+        return cache.getAppointmentById(id) ?: throw Exception("Appointment not found")
+    }
+
+    override suspend fun getLastIdInCache(): Int {
+        return cache.getLastIdInCache()
+    }
+
+    override suspend fun updateAppointmentInCache(appointment: Appointment): Resource<Boolean> {
+        return if (cache.updateAppointmentInCache(appointment)) {
+            Resource.Success(true)
+        } else {
+            Resource.Error("Appointment not found.")
+        }
     }
 
     override suspend fun deleteAppointmentFromCache(appointment: Appointment): Resource<Boolean> {
-        return try {
-            cache.deleteAppointmentFromCache(appointment)
-        } catch (e: Exception) {
-            throw Exception("Exception: ${e.message}")
+        return if (cache.deleteAppointmentFromCache(appointment)) {
+            cache.addAppointmentToDeleteList(appointment.id, appointment.hasBeenSynced)
+            Resource.Success(true)
+        } else {
+            Resource.Error("Appointment not found.")
         }
     }
 
-    override suspend fun getLastIdInCache(): Int? {
+    override suspend fun deleteAppointmentFromByDayCache(date: Int, id: Int): Resource<Boolean> {
         return try {
-            cache.getLastIdInCache()
+            cache.deleteAppointmentFromByDayCache(date, id)
+            Resource.Success(true)
+        } catch (e: IllegalArgumentException) {
+            Resource.Error("IllegalArgumentException: ${e.message ?: "Unknown Error"}")
         } catch (e: Exception) {
-            throw Exception("Exception: ${e.message}")
+            Resource.Error("Exception: ${e.message ?: "Unknown Error"}")
         }
     }
 
-    override suspend fun saveLastIdInCache(id: Int): Int {
-        return try {
-            cache.saveLastIdInCache(id)
-        } catch (e: Exception) {
-            throw Exception("Exception: ${e.message}")
-        }
+    override suspend fun clearCache() {
+        cache.clearCache()
     }
+
+
+
+//    override suspend fun saveLastIdInCache(id: Int): Int? {
+//        return cache.saveLastIdInCache(id)
+//    }
 }

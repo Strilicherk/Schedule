@@ -10,11 +10,12 @@ import com.example.schedule.feature_schedule.domain.repository.AppointmentReposi
 import com.example.schedule.feature_schedule.domain.use_case.appointment.AppointmentUseCases
 import com.example.schedule.feature_schedule.domain.use_case.appointment.cache.AddAppointmentToCacheUseCase
 import com.example.schedule.feature_schedule.domain.use_case.appointment.cache.ClearAppointmentCacheUseCase
-import com.example.schedule.feature_schedule.domain.use_case.appointment.cache.GetAllCachedAppointmentsUseCase
-import com.example.schedule.feature_schedule.domain.use_case.appointment.cache.GetLastIdInCacheUseCase
-import com.example.schedule.feature_schedule.domain.use_case.appointment.cache.LoadAppointmentsFromRepositoryToCache
-import com.example.schedule.feature_schedule.domain.use_case.appointment.cache.SaveLastIdInCacheUseCase
-import com.example.schedule.feature_schedule.domain.use_case.appointment.cache.UpdateCachedAppointmentUseCase
+import com.example.schedule.feature_schedule.domain.use_case.appointment.LoadAppointmentsFromRepositoryToCache
+import com.example.schedule.feature_schedule.domain.use_case.appointment.ValidateAppointmentInfosUseCase
+import com.example.schedule.feature_schedule.domain.use_case.appointment.cache.DeleteAppointmentFromCacheUseCase
+import com.example.schedule.feature_schedule.domain.use_case.appointment.cache.GetAppointmentFromCacheByIdUseCase
+import com.example.schedule.feature_schedule.domain.use_case.appointment.cache.GetAppointmentsFromCacheByDateUseCase
+import com.example.schedule.feature_schedule.domain.use_case.appointment.cache.UpdateAppointmentFromCacheUseCase
 import com.example.schedule.feature_schedule.domain.use_case.appointment.local.DeleteLocalAppointmentUseCase
 import com.example.schedule.feature_schedule.domain.use_case.appointment.local.GetLastIdFromRoomUseCase
 import com.example.schedule.feature_schedule.domain.use_case.appointment.remote.GetRemoteAppointmentsUseCase
@@ -66,8 +67,8 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideCache(repository: AppointmentRepository): AppointmentCache {
-        return AppointmentCache(repository)
+    fun provideCache(): AppointmentCache {
+        return AppointmentCache()
     }
 
     @Provides
@@ -75,25 +76,29 @@ object AppModule {
     fun providesAppointmentUseCases(repository: AppointmentRepository): AppointmentUseCases {
         return AppointmentUseCases(
             // cache
-            addAppointmentToCacheUseCase = AddAppointmentToCacheUseCase(),
-            clearAppointmentCacheUseCase = ClearAppointmentCacheUseCase(),
-            getAllCachedAppointmentsUseCase = GetAllCachedAppointmentsUseCase(),
-            getLastIdInCacheUseCase = GetLastIdInCacheUseCase(repository, GetLastIdFromRoomUseCase(repository), SaveLastIdInCacheUseCase(repository)),
-            loadAppointmentsFromRepositoryToCache = LoadAppointmentsFromRepositoryToCache(),
-            saveLastIncAppointmentUseCase = UpsertLocalAppointmentUseCase(repository),
-            updateCachedAppointmentUseCase = UpdateCachedAppointmentUseCase(),
+            addAppointmentToCacheUseCase = AddAppointmentToCacheUseCase(repository, ValidateAppointmentInfosUseCase(repository), UpsertLocalAppointmentUseCase(repository) ),
+            clearAppointmentCacheUseCase = ClearAppointmentCacheUseCase(repository),
+            deleteAppointmentFromCacheUseCase = DeleteAppointmentFromCacheUseCase(repository),
+            getAppointmentFromCacheByIdUseCase = GetAppointmentFromCacheByIdUseCase(repository),
+            getAppointmentsFromCacheByDateUseCase = GetAppointmentsFromCacheByDateUseCase(repository),
+            updateAppointmentFromCacheUseCase = UpdateAppointmentFromCacheUseCase(repository),
+//            loadAppointmentsFromRepositoryToCache = LoadAppointmentsFromRepositoryToCache(repository),
 
             // local
             deleteLocalAppointmentUseCase = DeleteLocalAppointmentUseCase(repository),
             getLastIdFromRoomUseCase = GetLastIdFromRoomUseCase(repository),
-            selectLocalAppointmentsOfTheYearUseCase = SelectLocalAppointmentsOfTheYearUseCase(repository),
+            selectLocalAppointmentsOfTheYearUseCase = SelectLocalAppointmentsOfTheYearUseCase(
+                repository
+            ),
             upsertLocalAppointmentUseCase = UpsertLocalAppointmentUseCase(repository),
-            upsertRemoteAppointmentsIntoRoomUseCase = UpsertRemoteAppointmentsIntoRoomUseCase(repository),
+            upsertRemoteAppointmentsIntoRoomUseCase = UpsertRemoteAppointmentsIntoRoomUseCase(
+                repository
+            ),
 
             // remote
             deleteRemoteAppointmentUseCase = DeleteRemoteAppointmentUseCase(repository),
             getRemoteAppointmentsUseCase = GetRemoteAppointmentsUseCase(repository),
-            postRemoteAppointmentUseCase = PostUnsyncedAppointmentsUseCase(repository),
+            postRemoteAppointmentUseCase = PostUnsyncedAppointmentsUseCase(repository)
         )
     }
 }

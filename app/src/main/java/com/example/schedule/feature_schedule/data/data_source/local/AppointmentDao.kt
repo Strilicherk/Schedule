@@ -29,6 +29,6 @@ interface AppointmentDao {
     @Query("DELETE FROM APPOINTMENT WHERE Id = :id")
     suspend fun deleteAppointment(id: Int): Int
 
-    @Query("SELECT MAX(id) FROM APPOINTMENT")
-    suspend fun getLastIdFromRoom(): Int
+//    @Query("SELECT MAX(id) FROM APPOINTMENT")
+//    suspend fun getLastIdFromRoom(): Int
 }
