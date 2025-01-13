@@ -24,7 +24,7 @@ interface AppointmentDao {
     suspend fun selectUnsyncedAppointments(): List<AppointmentEntity>
 
     @Upsert
-    suspend fun upsertAppointment(appointment: AppointmentEntity): Long
+    suspend fun upsertAppointment(appointment: AppointmentEntity): Int
 
     @Query("DELETE FROM APPOINTMENT WHERE Id = :id")
     suspend fun deleteAppointment(id: Int): Int

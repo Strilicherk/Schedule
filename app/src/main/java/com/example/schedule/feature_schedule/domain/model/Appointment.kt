@@ -33,4 +33,8 @@ data class Appointment(
     companion object{
         val noteColors = listOf(Blue, Red, Green, Gray, Yellow, Black, Cyan)
     }
+
+    fun compareAppointmentDates(appointment: Appointment): Boolean {
+        return this.startDate == appointment.startDate && this.endDate == appointment.endDate
+    }
 }

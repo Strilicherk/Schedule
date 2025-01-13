@@ -5,11 +5,11 @@ import com.example.schedule.feature_schedule.domain.use_case.appointment.cache.C
 import com.example.schedule.feature_schedule.domain.use_case.appointment.cache.DeleteAppointmentFromCacheUseCase
 import com.example.schedule.feature_schedule.domain.use_case.appointment.cache.GetAppointmentFromCacheByIdUseCase
 import com.example.schedule.feature_schedule.domain.use_case.appointment.cache.GetAppointmentsFromCacheByDateUseCase
-import com.example.schedule.feature_schedule.domain.use_case.appointment.cache.UpdateAppointmentFromCacheUseCase
-import com.example.schedule.feature_schedule.domain.use_case.appointment.local.DeleteLocalAppointmentUseCase
+import com.example.schedule.feature_schedule.domain.use_case.appointment.cache.UpdateAppointmentInCacheUseCase
+import com.example.schedule.feature_schedule.domain.use_case.appointment.local.DeleteAppointmentFromRoomUseCase
 import com.example.schedule.feature_schedule.domain.use_case.appointment.local.GetLastIdFromRoomUseCase
-import com.example.schedule.feature_schedule.domain.use_case.appointment.local.SelectLocalAppointmentsOfTheYearUseCase
-import com.example.schedule.feature_schedule.domain.use_case.appointment.local.UpsertLocalAppointmentUseCase
+import com.example.schedule.feature_schedule.domain.use_case.appointment.local.SelectAppointmentsFromRoomByYearUseCase
+import com.example.schedule.feature_schedule.domain.use_case.appointment.local.AddAppointmentToRoomUseCase
 import com.example.schedule.feature_schedule.domain.use_case.appointment.local.UpsertRemoteAppointmentsIntoRoomUseCase
 import com.example.schedule.feature_schedule.domain.use_case.appointment.remote.DeleteRemoteAppointmentUseCase
 import com.example.schedule.feature_schedule.domain.use_case.appointment.remote.GetRemoteAppointmentsUseCase
@@ -25,14 +25,14 @@ data class AppointmentUseCases @Inject constructor(
     val deleteAppointmentFromCacheUseCase: DeleteAppointmentFromCacheUseCase,
     val getAppointmentFromCacheByIdUseCase: GetAppointmentFromCacheByIdUseCase,
     val getAppointmentsFromCacheByDateUseCase: GetAppointmentsFromCacheByDateUseCase,
-    val updateAppointmentFromCacheUseCase: UpdateAppointmentFromCacheUseCase,
+    val updateAppointmentInCacheUseCase: UpdateAppointmentInCacheUseCase,
 //    val loadAppointmentsFromRepositoryToCache: LoadAppointmentsFromRepositoryToCache,
 
     // local
-    val deleteLocalAppointmentUseCase: DeleteLocalAppointmentUseCase,
+    val deleteAppointmentFromRoomUseCase: DeleteAppointmentFromRoomUseCase,
     val getLastIdFromRoomUseCase: GetLastIdFromRoomUseCase,
-    val selectLocalAppointmentsOfTheYearUseCase: SelectLocalAppointmentsOfTheYearUseCase,
-    val upsertLocalAppointmentUseCase: UpsertLocalAppointmentUseCase,
+    val selectAppointmentsFromRoomByYearUseCase: SelectAppointmentsFromRoomByYearUseCase,
+    val addAppointmentToRoomUseCase: AddAppointmentToRoomUseCase,
     val upsertRemoteAppointmentsIntoRoomUseCase: UpsertRemoteAppointmentsIntoRoomUseCase,
 
     // remote

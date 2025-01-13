@@ -11,13 +11,12 @@ class ClearAppointmentCacheUseCase @Inject constructor(
     private val repository: AppointmentRepository
 ){
     suspend operator fun invoke(): Resource<Boolean> {
-        try {
+        return try {
             repository.clearCache()
-            return Resource.Success(true)
         } catch (e: IOException) {
-            return Resource.Error("IO Exception: $e")
+            Resource.Error("IO Exception: $e")
         } catch (e: Exception) {
-            return Resource.Error("Exception: $e")
+            Resource.Error("Exception: $e")
         }
     }
 }

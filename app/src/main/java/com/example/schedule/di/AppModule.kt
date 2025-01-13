@@ -10,17 +10,16 @@ import com.example.schedule.feature_schedule.domain.repository.AppointmentReposi
 import com.example.schedule.feature_schedule.domain.use_case.appointment.AppointmentUseCases
 import com.example.schedule.feature_schedule.domain.use_case.appointment.cache.AddAppointmentToCacheUseCase
 import com.example.schedule.feature_schedule.domain.use_case.appointment.cache.ClearAppointmentCacheUseCase
-import com.example.schedule.feature_schedule.domain.use_case.appointment.LoadAppointmentsFromRepositoryToCache
 import com.example.schedule.feature_schedule.domain.use_case.appointment.ValidateAppointmentInfosUseCase
 import com.example.schedule.feature_schedule.domain.use_case.appointment.cache.DeleteAppointmentFromCacheUseCase
 import com.example.schedule.feature_schedule.domain.use_case.appointment.cache.GetAppointmentFromCacheByIdUseCase
 import com.example.schedule.feature_schedule.domain.use_case.appointment.cache.GetAppointmentsFromCacheByDateUseCase
-import com.example.schedule.feature_schedule.domain.use_case.appointment.cache.UpdateAppointmentFromCacheUseCase
-import com.example.schedule.feature_schedule.domain.use_case.appointment.local.DeleteLocalAppointmentUseCase
+import com.example.schedule.feature_schedule.domain.use_case.appointment.cache.UpdateAppointmentInCacheUseCase
+import com.example.schedule.feature_schedule.domain.use_case.appointment.local.DeleteAppointmentFromRoomUseCase
 import com.example.schedule.feature_schedule.domain.use_case.appointment.local.GetLastIdFromRoomUseCase
 import com.example.schedule.feature_schedule.domain.use_case.appointment.remote.GetRemoteAppointmentsUseCase
-import com.example.schedule.feature_schedule.domain.use_case.appointment.local.SelectLocalAppointmentsOfTheYearUseCase
-import com.example.schedule.feature_schedule.domain.use_case.appointment.local.UpsertLocalAppointmentUseCase
+import com.example.schedule.feature_schedule.domain.use_case.appointment.local.SelectAppointmentsFromRoomByYearUseCase
+import com.example.schedule.feature_schedule.domain.use_case.appointment.local.AddAppointmentToRoomUseCase
 import com.example.schedule.feature_schedule.domain.use_case.appointment.local.UpsertRemoteAppointmentsIntoRoomUseCase
 import com.example.schedule.feature_schedule.domain.use_case.appointment.remote.DeleteRemoteAppointmentUseCase
 import com.example.schedule.feature_schedule.domain.use_case.appointment.remote.PostUnsyncedAppointmentsUseCase
@@ -76,21 +75,21 @@ object AppModule {
     fun providesAppointmentUseCases(repository: AppointmentRepository): AppointmentUseCases {
         return AppointmentUseCases(
             // cache
-            addAppointmentToCacheUseCase = AddAppointmentToCacheUseCase(repository, ValidateAppointmentInfosUseCase(repository), UpsertLocalAppointmentUseCase(repository) ),
+            addAppointmentToCacheUseCase = AddAppointmentToCacheUseCase(repository, ValidateAppointmentInfosUseCase(repository), AddAppointmentToRoomUseCase(repository) ),
             clearAppointmentCacheUseCase = ClearAppointmentCacheUseCase(repository),
             deleteAppointmentFromCacheUseCase = DeleteAppointmentFromCacheUseCase(repository),
             getAppointmentFromCacheByIdUseCase = GetAppointmentFromCacheByIdUseCase(repository),
             getAppointmentsFromCacheByDateUseCase = GetAppointmentsFromCacheByDateUseCase(repository),
-            updateAppointmentFromCacheUseCase = UpdateAppointmentFromCacheUseCase(repository),
+            updateAppointmentInCacheUseCase = UpdateAppointmentInCacheUseCase(repository),
 //            loadAppointmentsFromRepositoryToCache = LoadAppointmentsFromRepositoryToCache(repository),
 
             // local
-            deleteLocalAppointmentUseCase = DeleteLocalAppointmentUseCase(repository),
+            deleteAppointmentFromRoomUseCase = DeleteAppointmentFromRoomUseCase(repository),
             getLastIdFromRoomUseCase = GetLastIdFromRoomUseCase(repository),
-            selectLocalAppointmentsOfTheYearUseCase = SelectLocalAppointmentsOfTheYearUseCase(
+            selectAppointmentsFromRoomByYearUseCase = SelectAppointmentsFromRoomByYearUseCase(
                 repository
             ),
-            upsertLocalAppointmentUseCase = UpsertLocalAppointmentUseCase(repository),
+            addAppointmentToRoomUseCase = AddAppointmentToRoomUseCase(repository),
             upsertRemoteAppointmentsIntoRoomUseCase = UpsertRemoteAppointmentsIntoRoomUseCase(
                 repository
             ),

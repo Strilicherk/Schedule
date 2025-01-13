@@ -2,9 +2,6 @@ package com.example.schedule.feature_schedule.domain.repository
 
 import com.example.schedule.feature_schedule.common.Resource
 import com.example.schedule.feature_schedule.domain.model.Appointment
-import retrofit2.Call
-import retrofit2.Response
-import java.time.LocalDate
 
 interface AppointmentRepository {
     // local
@@ -13,8 +10,9 @@ interface AppointmentRepository {
         startOfYear: Long,
         endOfYear: Long
     ): List<Appointment>
+
     suspend fun selectUnsyncedLocalAppointments(): List<Appointment>
-    suspend fun upsertLocalAppointment(appointment: Appointment): Long
+    suspend fun upsertLocalAppointment(appointment: Appointment): Boolean
     suspend fun deleteLocalAppointment(idList: List<Int>): Int
 //    suspend fun getLastIdFromRoom(): Int
 
@@ -25,15 +23,20 @@ interface AppointmentRepository {
 
     // cache
     suspend fun addAppointmentToCache(appointment: Appointment): Resource<Boolean>
-    suspend fun addAppointmentToByDayCache(date: Int, appointmentId: Int): Resource<Boolean>
+    suspend fun addAppointmentToByDateCache(date: Int, appointmentId: Int): Resource<Boolean>
+    suspend fun addDateToByAppointmentCache(appointmentId: Int, date: Int): Resource<Boolean>
+    suspend fun addAppointmentToDeleteCache(id: Int, hasBeenSynced: Boolean): Resource<Boolean>
     suspend fun getAllAppointmentsFromCache(): Map<Int, Appointment>
-    suspend fun getAllAppointmentsFromByDayCache(): Map<Int, List<Int>>
-    suspend fun getAppointmentById(id: Int): Appointment?
+    suspend fun getAllAppointmentsFromByDateCache(): Map<Int, List<Int>>
+    suspend fun getAppointmentById(id: Int): Appointment
+    suspend fun getDatesByAppointment(id: Int): List<Int>
     suspend fun getLastIdInCache(): Int
+    suspend fun getAppointmentListByDate(id: Int): List<Int>
     suspend fun updateAppointmentInCache(appointment: Appointment): Resource<Boolean>
     suspend fun deleteAppointmentFromCache(appointment: Appointment): Resource<Boolean>
-    suspend fun deleteAppointmentFromByDayCache(date: Int, id: Int): Resource<Boolean>
-    suspend fun clearCache()
-//    suspend fun saveLastIdInCache(id: Int): Int?
-
+    suspend fun deleteAppointmentFromDateCache(id: Int): Resource<Boolean>
+    suspend fun deleteAppointmentFromByDateCache(date: Int, id: Int): Resource<Boolean>
+    suspend fun clearCache(): Resource<Boolean>
+    suspend fun clearDateByAppointment(id: Int): Resource<Boolean>
+    suspend fun generateDateKey(day: Int, month: Int, year: Int): Int
 }
