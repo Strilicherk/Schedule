@@ -12,6 +12,7 @@ coreKtx = "1.15.0"
 junit = "4.13.2"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
+kotlinLoggingJvmVersion = "3.0.5"
 kotlinxCoroutinesAndroid = "1.7.3"
 kotlinxCoroutinesTest = "1.7.3"
 lifecycleRuntimeKtx = "2.8.7"
@@ -58,6 +59,7 @@ junit-jupiter-engine = { module = "org.junit.jupiter:junit-jupiter-engine", vers
 kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinxCoroutinesAndroid" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinxCoroutinesTest" }
 
+microutils-kotlin-logging-jvm = { module = "io.github.microutils:kotlin-logging-jvm", version.ref = "kotlinLoggingJvmVersion" }
 navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "composeNavigation" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "serialization"}
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }

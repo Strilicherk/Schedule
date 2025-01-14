@@ -107,6 +107,9 @@ dependencies {
 
     // Teste de coroutines
     testImplementation(libs.kotlinx.coroutines.test)
+
+    // Logger
+    implementation(libs.microutils.kotlin.logging.jvm)
 }
 
 tasks.withType<Test> {

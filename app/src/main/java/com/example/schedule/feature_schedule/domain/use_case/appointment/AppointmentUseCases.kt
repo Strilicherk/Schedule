@@ -7,10 +7,8 @@ import com.example.schedule.feature_schedule.domain.use_case.appointment.cache.G
 import com.example.schedule.feature_schedule.domain.use_case.appointment.cache.GetAppointmentsFromCacheByDateUseCase
 import com.example.schedule.feature_schedule.domain.use_case.appointment.cache.UpdateAppointmentInCacheUseCase
 import com.example.schedule.feature_schedule.domain.use_case.appointment.local.DeleteAppointmentFromRoomUseCase
-import com.example.schedule.feature_schedule.domain.use_case.appointment.local.GetLastIdFromRoomUseCase
-import com.example.schedule.feature_schedule.domain.use_case.appointment.local.SelectAppointmentsFromRoomByYearUseCase
+import com.example.schedule.feature_schedule.domain.use_case.appointment.local.GetAllAppointmentsFromRoomUseCase
 import com.example.schedule.feature_schedule.domain.use_case.appointment.local.AddAppointmentToRoomUseCase
-import com.example.schedule.feature_schedule.domain.use_case.appointment.local.UpsertRemoteAppointmentsIntoRoomUseCase
 import com.example.schedule.feature_schedule.domain.use_case.appointment.remote.DeleteRemoteAppointmentUseCase
 import com.example.schedule.feature_schedule.domain.use_case.appointment.remote.GetRemoteAppointmentsUseCase
 import com.example.schedule.feature_schedule.domain.use_case.appointment.remote.PostUnsyncedAppointmentsUseCase
@@ -31,7 +29,7 @@ data class AppointmentUseCases @Inject constructor(
     // local
     val deleteAppointmentFromRoomUseCase: DeleteAppointmentFromRoomUseCase,
     val getLastIdFromRoomUseCase: GetLastIdFromRoomUseCase,
-    val selectAppointmentsFromRoomByYearUseCase: SelectAppointmentsFromRoomByYearUseCase,
+    val getAllAppointmentsFromRoomUseCase: GetAllAppointmentsFromRoomUseCase,
     val addAppointmentToRoomUseCase: AddAppointmentToRoomUseCase,
     val upsertRemoteAppointmentsIntoRoomUseCase: UpsertRemoteAppointmentsIntoRoomUseCase,
 

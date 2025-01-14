@@ -12,7 +12,6 @@ import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
-import java.io.IOException
 import java.time.LocalDate
 import java.time.LocalTime
 
@@ -41,13 +40,13 @@ class AddAppointmentToRoomUseCaseTest {
         )
 
         val message = "Failed to upsert appointment with ID: 1. Error: Cannot access database"
-        coEvery { repository.upsertLocalAppointment(appointment) } throws Exception(message)
+        coEvery { repository.updateAppointmentInRoom(appointment) } throws Exception(message)
 
         val result = useCase.invoke(appointment)
         assertTrue(result is Resource.Error)
         assertEquals("General Exception: $message", (result as Resource.Error).message)
 
-        coVerify (exactly = 1) { repository.upsertLocalAppointment(appointment) }
+        coVerify (exactly = 1) { repository.updateAppointmentInRoom(appointment) }
     }
 
     @Test
@@ -64,12 +63,12 @@ class AddAppointmentToRoomUseCaseTest {
             endTime = LocalTime.of(10, 0),
         )
 
-        coEvery { repository.upsertLocalAppointment(appointment) } returns 1
+        coEvery { repository.updateAppointmentInRoom(appointment) } returns 1
 
         val result = useCase.invoke(appointment)
         assertTrue(result is Resource.Success)
         assertEquals(true, (result as Resource.Success).data)
 
-        coVerify (exactly = 1) { repository.upsertLocalAppointment(appointment) }
+        coVerify (exactly = 1) { repository.updateAppointmentInRoom(appointment) }
     }
 }

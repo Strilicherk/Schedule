@@ -3,12 +3,9 @@ package com.example.schedule.local
 import com.example.schedule.feature_schedule.common.Resource
 import com.example.schedule.feature_schedule.domain.model.Appointment
 import com.example.schedule.feature_schedule.domain.repository.AppointmentRepository
-import com.example.schedule.feature_schedule.domain.use_case.appointment.local.UpsertRemoteAppointmentsIntoRoomUseCase
-import io.mockk.coEvery
+import com.example.schedule.feature_schedule.domain.use_case.appointment.UpsertRemoteAppointmentsIntoRoomUseCase
 import io.mockk.coVerify
 import io.mockk.mockk
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
@@ -48,6 +45,6 @@ class UpsertRemoteAppointmentsIntoRoomUseCaseTest {
         assertTrue(emissions[1] is Resource.Success)
         assertEquals(true, (emissions[1] as Resource.Success).data)
 
-        coVerify (exactly = 0) { repository.upsertLocalAppointment(any()) }
+        coVerify (exactly = 0) { repository.updateAppointmentInRoom(any()) }
     }
 }

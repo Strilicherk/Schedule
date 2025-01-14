@@ -18,16 +18,7 @@ class UpdateAppointmentInRoomUseCase @Inject constructor(
     suspend operator fun invoke(appointment: Appointment): Resource<Boolean> {
         val validatedAppointment = validateAppointmentInfosUseCase.invoke(appointment, true)
         return if (validatedAppointment is Resource.Success) {
-            return try {
-                val updatedAppointmentInRoom = withContext(Dispatchers.IO) {
-                    return@withContext repository.upsertLocalAppointment(appointment)
-                }
-                if (updatedAppointmentInRoom) Resource.Success(true) else Resource.Error("Unable to update appointment in Room database")
-            } catch (e: IOException) {
-                return Resource.Error("IO Exception: ${e.message}")
-            } catch (e: Exception) {
-                return Resource.Error("Exception: ${e.message}")
-            }
+            repository.updateAppointmentInRoom(appointment)
         } else {
             Resource.Error("${validatedAppointment.message}")
         }

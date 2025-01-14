@@ -1,4 +1,4 @@
-package com.example.schedule.feature_schedule.domain.use_case.appointment.local
+package com.example.schedule.feature_schedule.domain.use_case.appointment
 
 import com.example.schedule.feature_schedule.common.Resource
 import com.example.schedule.feature_schedule.domain.model.Appointment
@@ -20,7 +20,7 @@ class UpsertRemoteAppointmentsIntoRoomUseCase @Inject constructor(
                 is Resource.Success -> {
                     val remoteAppointments = apiAppointments.data
                     if (remoteAppointments!!.isNotEmpty()) {
-                        val localAppointments = repository.selectAppointments()
+                        val localAppointments = repository.getAllAppointmentsFromRoom()
 
                         val appointmentsWithConflict = remoteAppointments.filter { api ->
                             localAppointments.any { local -> local.id == api.id } ||
@@ -33,7 +33,7 @@ class UpsertRemoteAppointmentsIntoRoomUseCase @Inject constructor(
                         }
 
                         withContext(Dispatchers.IO) {
-                            appointmentsToSync.forEach { repository.upsertLocalAppointment(it) }
+                            appointmentsToSync.forEach { repository.updateAppointmentInRoom(it) }
                         }
 
                         emit(Resource.Success(true))
@@ -53,5 +53,4 @@ class UpsertRemoteAppointmentsIntoRoomUseCase @Inject constructor(
             }
         }
     }
-
 }

@@ -8,7 +8,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
-import java.io.IOException
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -16,43 +17,39 @@ import javax.inject.Singleton
 class DeleteAppointmentFromCacheUseCase @Inject constructor(
     private val repository: AppointmentRepository,
     private val deleteAppointmentFromRoomUseCase: DeleteAppointmentFromRoomUseCase,
-    private val addAppointmentToCacheUseCase: AddAppointmentToCacheUseCase
+    private val addAppointmentToCacheUseCase: AddAppointmentToCacheUseCase,
+    private val logger: Logger
 ) {
     suspend operator fun invoke(appointment: Appointment): Resource<Boolean> {
-        val dateList = repository.getDatesByAppointment(appointment.id)
-
+        logger.info("Deleting appointment from cache.")
+        val dateList = repository.getDatesByAppointment(appointment.id).data!!
         if (dateList.isEmpty())
             return Resource.Error("No dates found for appointment ID: ${appointment.id}")
 
-        return try {
-            val response = withContext(Dispatchers.IO) {
-                deleteAppointmentFromRoomUseCase.invoke(appointment.id)
-            }
+        val response = withContext(Dispatchers.IO) {
+            deleteAppointmentFromRoomUseCase.invoke(appointment.id)
+        }
 
-            return if (response is Resource.Error) {
-                Resource.Error("Cannot delete appointment from database")
-            } else {
-                try {
-                    coroutineScope {
-                        val deleteByDay = async {
-                            dateList.forEach { repository.deleteAppointmentFromByDateCache(it, appointment.id) }
-                        }
-                        val deleteFromCache = async {
-                            repository.deleteAppointmentFromCache(appointment)
-                        }
-                        deleteByDay.await()
-                        deleteFromCache.await()
-                    }
-                    Resource.Success(true)
-                } catch (e: Exception) {
-                    addAppointmentToCacheUseCase.invoke(appointment)
-                    Resource.Error("Failed to delete appointment from cache: ${e.message}")
+        if (response is Resource.Error)
+            return Resource.Error("Cannot delete appointment from database")
+
+        try {
+            coroutineScope {
+                val deleteByDay = async {
+                    dateList.forEach { repository.deleteAppointmentFromByDateCache(it, appointment.id) }
                 }
+                val deleteFromCache = async {
+                    repository.deleteAppointmentFromCache(appointment)
+                }
+                deleteByDay.await()
+                deleteFromCache.await()
             }
-        } catch (e: IOException) {
-            Resource.Error("IO Exception: ${e.message}")
+            logger.info("Appointment deleted successfully from cache.")
+            return Resource.Success(true)
         } catch (e: Exception) {
-            Resource.Error("Exception: ${e.message}")
+            addAppointmentToCacheUseCase.invoke(appointment)
+            logger.error("Failed to delete appointment from cache: ${e.message}")
+            return Resource.Error("Failed to delete appointment from cache: ${e.message}")
         }
     }
 }

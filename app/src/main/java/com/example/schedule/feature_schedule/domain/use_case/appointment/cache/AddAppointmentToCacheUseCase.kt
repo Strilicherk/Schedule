@@ -10,6 +10,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -18,46 +20,37 @@ import javax.inject.Singleton
 class AddAppointmentToCacheUseCase @Inject constructor(
     private val repository: AppointmentRepository,
     private val validateAppointmentInfosUseCase: ValidateAppointmentInfosUseCase,
-    private val addAppointmentToRoomUseCase: AddAppointmentToRoomUseCase
+    private val addAppointmentToRoomUseCase: AddAppointmentToRoomUseCase,
+    private val logger: Logger
 ) {
     suspend operator fun invoke(appointment: Appointment): Resource<Boolean> {
+        logger.info("Validating appointment information.")
         val result = validateAppointmentInfosUseCase.invoke(appointment, false)
         if (result is Resource.Error) return Resource.Error(result.message ?: "Validation failed")
         val appointmentToCreate = result.data!!
 
-        return try {
-            val createAppointmentInRoom = withContext(Dispatchers.IO) {
-                return@withContext addAppointmentToRoomUseCase.invoke(appointmentToCreate).data
-            }
+        logger.info("Creating appointment in Room.")
+        val createAppointmentInRoom = withContext(Dispatchers.IO) {
+            addAppointmentToRoomUseCase.invoke(appointmentToCreate).data
+        }
 
-            if (createAppointmentInRoom == true) {
-                repository.addAppointmentToCache(appointmentToCreate)
-                val dateRange = generateSequence(appointment.startDate) { current ->
-                    if (current.isBefore(appointment.endDate) || current.isEqual(appointment.endDate)) current.plusDays(
-                        1
-                    ) else null
-                }
-                dateRange.forEach { date ->
-                    val key = repository.generateDateKey(date.dayOfMonth, date.monthValue, date.year)
-                    repository.addAppointmentToByDateCache(key, appointment.id)
-                    repository.addDateToByAppointmentCache(appointment.id, key)
-                }
-                Resource.Success(true)
-            } else {
-                Resource.Error("Failed to create appointment in Room.")
+        return if (createAppointmentInRoom == true) {
+            logger.info("Adding appointment to cache.")
+            repository.addAppointmentToCache(appointmentToCreate)
+            val dateRange = generateSequence(appointment.startDate) { current ->
+                if (current.isBefore(appointment.endDate) || current.isEqual(appointment.endDate))
+                    current.plusDays(1) else null
             }
-        } catch (e: IOException) {
-            return Resource.Error("IO Exception: ${e.message}")
-        } catch (e: Exception) {
-            return Resource.Error("Exception: ${e.message}")
+            dateRange.forEach { date ->
+                val key = repository.generateDateKey(date.dayOfMonth, date.monthValue, date.year)
+                repository.addAppointmentToByDateCache(key, appointment.id)
+                repository.addDateToByAppointmentCache(appointment.id, key)
+            }
+            logger.info("Appointment added successfully to cache.")
+            Resource.Success(true)
+        } else {
+            logger.error("Failed to create appointment in Room.")
+            Resource.Error("Failed to create appointment in Room.")
         }
     }
 }
-
-//generateSequence(appointment.startDate) { current ->
-//    if (current.isBefore(appointment.endDate) || current.isEqual(appointment.endDate)) current.plusDays(1) else null
-//}.forEach { date ->
-//    val key = repository.generateDateKey(date.dayOfMonth, date.monthValue, date.year)
-//
-//    appointmentByDayCache.computeIfAbsent(key) { mutableListOf() }.add(appointment.id)
-//}

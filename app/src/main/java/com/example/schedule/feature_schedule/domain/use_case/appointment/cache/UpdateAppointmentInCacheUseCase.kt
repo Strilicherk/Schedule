@@ -7,6 +7,8 @@ import com.example.schedule.feature_schedule.domain.use_case.appointment.Validat
 import com.example.schedule.feature_schedule.domain.use_case.appointment.local.UpdateAppointmentInRoomUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -18,38 +20,31 @@ class UpdateAppointmentInCacheUseCase @Inject constructor(
     private val getDatesFromCacheByAppointmentUseCase: GetDatesFromCacheByAppointmentUseCase,
     private val getAppointmentFromCacheByIdUseCase: GetAppointmentFromCacheByIdUseCase,
     private val validateAppointmentInfosUseCase: ValidateAppointmentInfosUseCase,
+    private val logger: Logger
 ) {
     suspend operator fun invoke(appointment: Appointment): Resource<Boolean> {
+        logger.info("Validating appointment for update.")
         val validatedAppointment = validateAppointmentInfosUseCase.invoke(appointment, true).data
             ?: return Resource.Error("Validation failed")
 
-        return try {
-            val updateAppointmentInRoom = withContext(Dispatchers.IO) {
-                updateAppointmentInRoomUseCase.invoke(validatedAppointment)
+        val updateAppointmentInRoom = withContext(Dispatchers.IO) {
+            updateAppointmentInRoomUseCase.invoke(validatedAppointment)
+        }
+
+        if (updateAppointmentInRoom is Resource.Success) {
+            val oldAppointment = getAppointmentFromCacheByIdUseCase.invoke(validatedAppointment.id).data
+                ?: return Resource.Error("Old appointment not found")
+
+            if (!validatedAppointment.compareAppointmentDates(oldAppointment)) {
+                val oldDatesList = getDatesFromCacheByAppointmentUseCase.invoke(validatedAppointment.id).data
+                    ?: emptyList()
+                clearAndRegenerateDates(validatedAppointment, oldDatesList)
+                repository.updateAppointmentInCache(validatedAppointment)
             }
-
-            if (updateAppointmentInRoom is Resource.Success) {
-                val oldAppointment =
-                    getAppointmentFromCacheByIdUseCase.invoke(validatedAppointment.id).data
-                        ?: return Resource.Error("Old appointment not found")
-
-                if (!validatedAppointment.compareAppointmentDates(oldAppointment)) {
-                    val oldDatesList =
-                        getDatesFromCacheByAppointmentUseCase.invoke(validatedAppointment.id).data
-                            ?: emptyList()
-
-                    clearAndRegenerateDates(validatedAppointment, oldDatesList)
-                    repository.updateAppointmentInCache(validatedAppointment)
-                }
-
-                Resource.Success(true)
-            } else {
-                updateAppointmentInRoom
-            }
-        } catch (e: IOException) {
-            Resource.Error("IO Exception: ${e.message}")
-        } catch (e: Exception) {
-            Resource.Error("Exception: ${e.message}")
+            logger.info("Appointment updated successfully.")
+            return Resource.Success(true)
+        } else {
+            return updateAppointmentInRoom
         }
     }
 
@@ -63,10 +58,7 @@ class UpdateAppointmentInCacheUseCase @Inject constructor(
         repository.clearDateByAppointment(validatedAppointment.id)
 
         val dateRange = generateSequence(validatedAppointment.startDate) { current ->
-            if (current.isBefore(validatedAppointment.endDate) || current.isEqual(
-                    validatedAppointment.endDate
-                )
-            )
+            if (current.isBefore(validatedAppointment.endDate) || current.isEqual(validatedAppointment.endDate))
                 current.plusDays(1)
             else null
         }

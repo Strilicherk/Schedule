@@ -4,8 +4,6 @@ import com.example.schedule.feature_schedule.common.Resource
 import com.example.schedule.feature_schedule.domain.repository.AppointmentRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import retrofit2.HttpException
-import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -16,7 +14,7 @@ class PostUnsyncedAppointmentsUseCase @Inject constructor(
     operator fun invoke(): Flow<Resource<Boolean>> {
         return flow {
             emit(Resource.Loading())
-            val unsyncedLocalAppointments = repository.selectUnsyncedLocalAppointments()
+            val unsyncedLocalAppointments = repository.getUnsyncedAppointmentsFromRoom()
 
             if (unsyncedLocalAppointments.isEmpty()) {
                 emit(Resource.Success(true))

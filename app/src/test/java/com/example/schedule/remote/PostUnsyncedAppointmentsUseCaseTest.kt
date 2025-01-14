@@ -59,7 +59,7 @@ class PostUnsyncedAppointmentsUseCaseTest {
                     isSynced = false
                 )
             )
-            coEvery { repository.selectUnsyncedLocalAppointments() } returns unsyncedAppointments
+            coEvery { repository.getUnsyncedAppointmentsFromRoom() } returns unsyncedAppointments
             coEvery { repository.postUnsyncedRemoteAppointments(unsyncedAppointments) } returns mutableMapOf(
                 1 to true,
                 2 to 404,
@@ -72,7 +72,7 @@ class PostUnsyncedAppointmentsUseCaseTest {
             assertTrue(emissions[1] is Resource.Error)
             assertTrue((emissions[1] as Resource.Error).data == false)
 
-            coVerify(exactly = 1) { repository.selectUnsyncedLocalAppointments() }
+            coVerify(exactly = 1) { repository.getUnsyncedAppointmentsFromRoom() }
             coVerify(exactly = 1) { repository.postUnsyncedRemoteAppointments(unsyncedAppointments) }
         }
 
@@ -106,7 +106,7 @@ class PostUnsyncedAppointmentsUseCaseTest {
                     isSynced = false
                 )
             )
-            coEvery { repository.selectUnsyncedLocalAppointments() } returns unsyncedAppointments
+            coEvery { repository.getUnsyncedAppointmentsFromRoom() } returns unsyncedAppointments
             coEvery { repository.postUnsyncedRemoteAppointments(unsyncedAppointments) } returns mutableMapOf(
                 1 to true,
                 2 to "Unknown I/O error occurred",
@@ -119,7 +119,7 @@ class PostUnsyncedAppointmentsUseCaseTest {
             assertTrue(emissions[1] is Resource.Error)
             assertTrue((emissions[1] as Resource.Error).data == false)
 
-            coVerify(exactly = 1) { repository.selectUnsyncedLocalAppointments() }
+            coVerify(exactly = 1) { repository.getUnsyncedAppointmentsFromRoom() }
             coVerify(exactly = 1) { repository.postUnsyncedRemoteAppointments(unsyncedAppointments) }
         }
 
@@ -127,7 +127,7 @@ class PostUnsyncedAppointmentsUseCaseTest {
     @Test
     @DisplayName("Should emit Loading and Success when unsyncedLocalAppointments is empty")
     fun `should emit Loading and Success when unsyncedLocalAppointments is empty`() = runTest {
-        coEvery { repository.selectUnsyncedLocalAppointments() } returns emptyList<Appointment>()
+        coEvery { repository.getUnsyncedAppointmentsFromRoom() } returns emptyList<Appointment>()
 
         val emissions = useCase().toList()
 
@@ -136,7 +136,7 @@ class PostUnsyncedAppointmentsUseCaseTest {
         assertTrue(emissions[1] is Resource.Success)
         assertTrue((emissions[1] as Resource.Success).data == true)
 
-        coVerify(exactly = 1) { repository.selectUnsyncedLocalAppointments() }
+        coVerify(exactly = 1) { repository.getUnsyncedAppointmentsFromRoom() }
     }
 
     @Test
@@ -168,7 +168,7 @@ class PostUnsyncedAppointmentsUseCaseTest {
                 isSynced = false
             )
         )
-        coEvery { repository.selectUnsyncedLocalAppointments() } returns unsyncedAppointments
+        coEvery { repository.getUnsyncedAppointmentsFromRoom() } returns unsyncedAppointments
         coEvery { repository.postUnsyncedRemoteAppointments(unsyncedAppointments) } returns mutableMapOf(
             1 to true,
             2 to true,
@@ -181,7 +181,7 @@ class PostUnsyncedAppointmentsUseCaseTest {
         assertTrue(emissions[1] is Resource.Success)
         assertTrue((emissions[1] as Resource.Success).data == true)
 
-        coVerify(exactly = 1) { repository.selectUnsyncedLocalAppointments() }
+        coVerify(exactly = 1) { repository.getUnsyncedAppointmentsFromRoom() }
         coVerify(exactly = 1) { repository.postUnsyncedRemoteAppointments(unsyncedAppointments) }
     }
 }

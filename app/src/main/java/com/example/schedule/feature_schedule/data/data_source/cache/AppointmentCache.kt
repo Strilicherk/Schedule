@@ -17,54 +17,45 @@ class AppointmentCache {
             appointment
         return true
     }
-
     fun addAppointmentToByDateCache(date: Int, appointmentId: Int): Boolean {
-        if (appointmentByDateCache[date]?.contains(appointmentId) != true)
-            appointmentByDateCache.computeIfAbsent(date) { mutableListOf() }.add(appointmentId)
+        if (appointmentByDateCache[date]?.contains(appointmentId) != true) appointmentByDateCache.computeIfAbsent(
+            date
+        ) { mutableListOf() }.add(appointmentId)
         return true
     }
-
     fun addDateToByAppointmentCache(appointmentId: Int, date: Int): Boolean {
-        if (dateByAppointmentCache[appointmentId]?.contains(date) != true)
-            dateByAppointmentCache.computeIfAbsent(appointmentId) { mutableListOf() }.add(date)
+        if (dateByAppointmentCache[appointmentId]?.contains(date) != true) dateByAppointmentCache.computeIfAbsent(
+            appointmentId
+        ) { mutableListOf() }.add(date)
         return true
     }
-
     fun addAppointmentToDeleteCache(id: Int, hasBeenSynced: Boolean): Boolean {
         if (!appointmentToDeleteCache.containsKey(id)) appointmentToDeleteCache[id] = hasBeenSynced
         return true
     }
-
     fun getAllAppointmentsFromCache(): Map<Int, Appointment> {
         return appointmentCache
     }
-
     fun getAllAppointmentsFromByDateCache(): Map<Int, List<Int>> {
         return appointmentByDateCache
     }
-
     fun getDatesByAppointment(id: Int): List<Int>? {
         return dateByAppointmentCache[id]?.toList()
     }
-
     fun getAppointmentById(id: Int): Appointment? {
         return appointmentCache[id]
     }
-
-    fun getAppointmentListByDate(id: Int): List<Int> {
-        return appointmentByDateCache[id]?.toList() ?: emptyList()
+    fun getAppointmentListByDate(id: Int): List<Int>? {
+        return appointmentByDateCache[id]?.toList()
     }
-
     fun getLastIdInCache(): Int {
         return appointmentCache.keys.last()
     }
-
     fun updateAppointmentInCache(appointment: Appointment): Boolean {
-        if (appointmentCache.containsKey(appointment.id))
-            appointmentCache[appointment.id] = appointment
+        if (appointmentCache.containsKey(appointment.id)) appointmentCache[appointment.id] =
+            appointment
         return appointmentCache[appointment.id] == appointment
     }
-
     fun deleteAppointmentFromCache(appointment: Appointment): Boolean {
         return if (appointmentCache.containsKey(appointment.id)) {
             appointmentCache.remove(appointment.id)
@@ -73,7 +64,6 @@ class AppointmentCache {
             true
         }
     }
-
     fun deleteAppointmentFromByDateCache(date: Int, id: Int) {
         appointmentByDateCache[date]?.let {
             it.remove(id)
@@ -82,7 +72,6 @@ class AppointmentCache {
             }
         }
     }
-
     fun deleteAppointmentFromDateCache(id: Int): Boolean {
         return if (dateByAppointmentCache.containsKey(id)) {
             dateByAppointmentCache.remove(id)
@@ -91,13 +80,11 @@ class AppointmentCache {
             true
         }
     }
-
     fun clearCache() {
         appointmentCache.clear()
         appointmentByDateCache.clear()
         dateByAppointmentCache.clear()
     }
-
     fun clearDateByAppointmentById(id: Int): Boolean {
         dateByAppointmentCache[id]?.clear()
         return true
