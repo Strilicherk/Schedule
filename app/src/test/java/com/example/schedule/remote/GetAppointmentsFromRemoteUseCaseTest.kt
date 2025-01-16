@@ -3,7 +3,7 @@ package com.example.schedule.remote
 import com.example.schedule.feature_schedule.common.Resource
 import com.example.schedule.feature_schedule.domain.model.Appointment
 import com.example.schedule.feature_schedule.domain.repository.AppointmentRepository
-import com.example.schedule.feature_schedule.domain.use_case.appointment.remote.GetRemoteAppointmentsUseCase
+import com.example.schedule.feature_schedule.domain.use_case.appointment.remote.GetAppointmentsFromRemoteUseCase
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
@@ -22,14 +22,14 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 
-class GetRemoteAppointmentsUseCaseTest {
+class GetAppointmentsFromRemoteUseCaseTest {
     private lateinit var repository: AppointmentRepository
-    private lateinit var useCase: GetRemoteAppointmentsUseCase
+    private lateinit var useCase: GetAppointmentsFromRemoteUseCase
 
     @BeforeEach
     fun setup() {
         repository = mockk()
-        useCase = GetRemoteAppointmentsUseCase(repository)
+        useCase = GetAppointmentsFromRemoteUseCase(repository)
     }
 
     // Error

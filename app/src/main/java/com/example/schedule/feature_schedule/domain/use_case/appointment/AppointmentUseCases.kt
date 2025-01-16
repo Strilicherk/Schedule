@@ -9,9 +9,8 @@ import com.example.schedule.feature_schedule.domain.use_case.appointment.cache.U
 import com.example.schedule.feature_schedule.domain.use_case.appointment.local.DeleteAppointmentFromRoomUseCase
 import com.example.schedule.feature_schedule.domain.use_case.appointment.local.GetAllAppointmentsFromRoomUseCase
 import com.example.schedule.feature_schedule.domain.use_case.appointment.local.AddAppointmentToRoomUseCase
-import com.example.schedule.feature_schedule.domain.use_case.appointment.remote.DeleteRemoteAppointmentUseCase
-import com.example.schedule.feature_schedule.domain.use_case.appointment.remote.GetRemoteAppointmentsUseCase
-import com.example.schedule.feature_schedule.domain.use_case.appointment.remote.PostUnsyncedAppointmentsUseCase
+import com.example.schedule.feature_schedule.domain.use_case.appointment.remote.DeleteAppointmentFromRemoteUseCase
+import com.example.schedule.feature_schedule.domain.use_case.appointment.remote.GetAppointmentsFromRemoteUseCase
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -34,7 +33,7 @@ data class AppointmentUseCases @Inject constructor(
     val upsertRemoteAppointmentsIntoRoomUseCase: UpsertRemoteAppointmentsIntoRoomUseCase,
 
     // remote
-    val deleteRemoteAppointmentUseCase: DeleteRemoteAppointmentUseCase,
-    val getRemoteAppointmentsUseCase: GetRemoteAppointmentsUseCase,
-    val postRemoteAppointmentUseCase: PostUnsyncedAppointmentsUseCase,
+    val deleteAppointmentFromRemoteUseCase: DeleteAppointmentFromRemoteUseCase,
+    val getAppointmentsFromRemoteUseCase: GetAppointmentsFromRemoteUseCase,
+    val postRemoteAppointmentUseCase: PostUnsyncedAppointmentInRemoteUseCase,
 )

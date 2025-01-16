@@ -24,9 +24,8 @@ class UpdateAppointmentInCacheUseCase @Inject constructor(
 ) {
     suspend operator fun invoke(appointment: Appointment): Resource<Boolean> {
         logger.info("Validating appointment for update.")
-        val validatedAppointment = validateAppointmentInfosUseCase.invoke(appointment, true).data
+        val validatedAppointment = validateAppointmentInfosUseCase.invoke(appointment).data
             ?: return Resource.Error("Validation failed")
-
         val updateAppointmentInRoom = withContext(Dispatchers.IO) {
             updateAppointmentInRoomUseCase.invoke(validatedAppointment)
         }

@@ -1,27 +1,18 @@
 package com.example.schedule.remote
 
-import com.example.schedule.feature_schedule.common.Resource
 import com.example.schedule.feature_schedule.domain.repository.AppointmentRepository
-import com.example.schedule.feature_schedule.domain.use_case.appointment.remote.DeleteRemoteAppointmentUseCase
-import io.mockk.coEvery
-import io.mockk.coVerify
+import com.example.schedule.feature_schedule.domain.use_case.appointment.remote.DeleteAppointmentFromRemoteUseCase
 import io.mockk.mockk
-import kotlinx.coroutines.flow.toList
-import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.DisplayName
-import org.junit.jupiter.api.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 
-class DeleteRemoteAppointmentUseCaseTest {
+class DeleteAppointmentFromRemoteUseCaseTest {
     private lateinit var repository: AppointmentRepository
-    private lateinit var useCase: DeleteRemoteAppointmentUseCase
+    private lateinit var useCase: DeleteAppointmentFromRemoteUseCase
 
     @BeforeEach
     fun setup() {
         repository = mockk()
-        useCase = DeleteRemoteAppointmentUseCase(repository)
+        useCase = DeleteAppointmentFromRemoteUseCase(repository)
     }
 
 //    // Error

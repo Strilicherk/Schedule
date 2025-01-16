@@ -3,7 +3,7 @@ package com.example.schedule.remote
 import com.example.schedule.feature_schedule.common.Resource
 import com.example.schedule.feature_schedule.domain.model.Appointment
 import com.example.schedule.feature_schedule.domain.repository.AppointmentRepository
-import com.example.schedule.feature_schedule.domain.use_case.appointment.remote.PostUnsyncedAppointmentsUseCase
+import com.example.schedule.feature_schedule.domain.use_case.appointment.PostUnsyncedAppointmentInRemoteUseCase
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
@@ -18,14 +18,14 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 
-class PostUnsyncedAppointmentsUseCaseTest {
+class PostUnsyncedAppointmentInRemoteUseCaseTest {
     private lateinit var repository: AppointmentRepository
-    private lateinit var useCase: PostUnsyncedAppointmentsUseCase
+    private lateinit var useCase: PostUnsyncedAppointmentInRemoteUseCase
 
     @BeforeEach
     fun setup() {
         repository = mockk()
-        useCase = PostUnsyncedAppointmentsUseCase(repository)
+        useCase = PostUnsyncedAppointmentInRemoteUseCase(repository)
     }
 
     // Error
@@ -60,7 +60,7 @@ class PostUnsyncedAppointmentsUseCaseTest {
                 )
             )
             coEvery { repository.getUnsyncedAppointmentsFromRoom() } returns unsyncedAppointments
-            coEvery { repository.postUnsyncedRemoteAppointments(unsyncedAppointments) } returns mutableMapOf(
+            coEvery { repository.addAppointmentToRemote(unsyncedAppointments) } returns mutableMapOf(
                 1 to true,
                 2 to 404,
             )
@@ -73,7 +73,7 @@ class PostUnsyncedAppointmentsUseCaseTest {
             assertTrue((emissions[1] as Resource.Error).data == false)
 
             coVerify(exactly = 1) { repository.getUnsyncedAppointmentsFromRoom() }
-            coVerify(exactly = 1) { repository.postUnsyncedRemoteAppointments(unsyncedAppointments) }
+            coVerify(exactly = 1) { repository.addAppointmentToRemote(unsyncedAppointments) }
         }
 
     @Test
@@ -107,7 +107,7 @@ class PostUnsyncedAppointmentsUseCaseTest {
                 )
             )
             coEvery { repository.getUnsyncedAppointmentsFromRoom() } returns unsyncedAppointments
-            coEvery { repository.postUnsyncedRemoteAppointments(unsyncedAppointments) } returns mutableMapOf(
+            coEvery { repository.addAppointmentToRemote(unsyncedAppointments) } returns mutableMapOf(
                 1 to true,
                 2 to "Unknown I/O error occurred",
             )
@@ -120,7 +120,7 @@ class PostUnsyncedAppointmentsUseCaseTest {
             assertTrue((emissions[1] as Resource.Error).data == false)
 
             coVerify(exactly = 1) { repository.getUnsyncedAppointmentsFromRoom() }
-            coVerify(exactly = 1) { repository.postUnsyncedRemoteAppointments(unsyncedAppointments) }
+            coVerify(exactly = 1) { repository.addAppointmentToRemote(unsyncedAppointments) }
         }
 
     // Success
@@ -169,7 +169,7 @@ class PostUnsyncedAppointmentsUseCaseTest {
             )
         )
         coEvery { repository.getUnsyncedAppointmentsFromRoom() } returns unsyncedAppointments
-        coEvery { repository.postUnsyncedRemoteAppointments(unsyncedAppointments) } returns mutableMapOf(
+        coEvery { repository.addAppointmentToRemote(unsyncedAppointments) } returns mutableMapOf(
             1 to true,
             2 to true,
         )
@@ -182,6 +182,6 @@ class PostUnsyncedAppointmentsUseCaseTest {
         assertTrue((emissions[1] as Resource.Success).data == true)
 
         coVerify(exactly = 1) { repository.getUnsyncedAppointmentsFromRoom() }
-        coVerify(exactly = 1) { repository.postUnsyncedRemoteAppointments(unsyncedAppointments) }
+        coVerify(exactly = 1) { repository.addAppointmentToRemote(unsyncedAppointments) }
     }
 }

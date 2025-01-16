@@ -16,7 +16,7 @@ class UpdateAppointmentInRoomUseCase @Inject constructor(
     private val validateAppointmentInfosUseCase: ValidateAppointmentInfosUseCase
 ) {
     suspend operator fun invoke(appointment: Appointment): Resource<Boolean> {
-        val validatedAppointment = validateAppointmentInfosUseCase.invoke(appointment, true)
+        val validatedAppointment = validateAppointmentInfosUseCase.invoke(appointment)
         return if (validatedAppointment is Resource.Success) {
             repository.updateAppointmentInRoom(appointment)
         } else {

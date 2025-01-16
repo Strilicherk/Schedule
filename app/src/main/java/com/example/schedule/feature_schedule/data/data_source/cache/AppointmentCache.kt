@@ -48,6 +48,9 @@ class AppointmentCache {
     fun getAppointmentListByDate(id: Int): List<Int>? {
         return appointmentByDateCache[id]?.toList()
     }
+    fun getAppointmentsFromDeleteList(): Map<Int, Boolean> {
+        return appointmentToDeleteCache
+    }
     fun getLastIdInCache(): Int {
         return appointmentCache.keys.last()
     }
@@ -80,15 +83,24 @@ class AppointmentCache {
             true
         }
     }
-    fun clearCache() {
-        appointmentCache.clear()
-        appointmentByDateCache.clear()
-        dateByAppointmentCache.clear()
+    fun deleteAppointmentFromDeleteCache(id: Int): Boolean {
+        return if (appointmentToDeleteCache.containsKey(id)) {
+            appointmentToDeleteCache.remove(id)
+            !appointmentToDeleteCache.containsKey(id)
+        } else {
+            true
+        }
     }
     fun clearDateByAppointmentById(id: Int): Boolean {
         dateByAppointmentCache[id]?.clear()
         return true
     }
+    fun clearCache() {
+        appointmentCache.clear()
+        appointmentByDateCache.clear()
+        dateByAppointmentCache.clear()
+    }
+
 }
 
 //fun saveLastIdInCache(id: Int): Int? {

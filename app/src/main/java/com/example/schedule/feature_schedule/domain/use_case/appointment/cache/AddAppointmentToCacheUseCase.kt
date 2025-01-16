@@ -25,7 +25,7 @@ class AddAppointmentToCacheUseCase @Inject constructor(
 ) {
     suspend operator fun invoke(appointment: Appointment): Resource<Boolean> {
         logger.info("Validating appointment information.")
-        val result = validateAppointmentInfosUseCase.invoke(appointment, false)
+        val result = validateAppointmentInfosUseCase.invoke(appointment)
         if (result is Resource.Error) return Resource.Error(result.message ?: "Validation failed")
         val appointmentToCreate = result.data!!
 

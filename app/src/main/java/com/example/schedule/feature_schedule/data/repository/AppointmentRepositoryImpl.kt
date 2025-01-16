@@ -42,6 +42,7 @@ class AppointmentRepositoryImpl @Inject constructor(
             Resource.Error("Unexpected error while creating appointment: ${e.message}")
         }
     }
+
     override suspend fun getAllAppointmentsFromRoom(): Resource<List<Appointment>> {
         return try {
             val appointments = dao.selectAppointments().map { it.entityToDomain() }
@@ -52,6 +53,7 @@ class AppointmentRepositoryImpl @Inject constructor(
             Resource.Error("Unexpected error while fetching appointments: ${e.message}")
         }
     }
+
     override suspend fun getUnsyncedAppointmentsFromRoom(): Resource<List<Appointment>> {
         return try {
             val appointments = dao.selectUnsyncedAppointments().map { it.entityToDomain() }
@@ -62,6 +64,7 @@ class AppointmentRepositoryImpl @Inject constructor(
             Resource.Error("Unexpected error while fetching unsynced appointments: ${e.message}")
         }
     }
+
     override suspend fun updateAppointmentInRoom(appointment: Appointment): Resource<Boolean> {
         return try {
             val updatedAppointment = dao.upsertAppointment(appointment.domainToEntity())
@@ -78,6 +81,7 @@ class AppointmentRepositoryImpl @Inject constructor(
             Resource.Error("Unexpected error while updating appointment: ${e.message}")
         }
     }
+
     override suspend fun deleteAppointmentFromRoom(id: Int): Resource<Int> {
         return try {
             val deleteResult = dao.deleteAppointment(id)
@@ -98,61 +102,72 @@ class AppointmentRepositoryImpl @Inject constructor(
     // remote
     override suspend fun getRemoteAppointments(): Resource<List<Appointment>> {
         return try {
-            val res = api.getAppointments()
-            if (res.isSuccessful) {
-                api.getAppointments().body()?.map { it.dtoToEntity().entityToDomain() }
-                    ?: return Resource.Error("Empty response body")
+            val response = api.getAppointments()
+            if (response.isSuccessful) {
+                Resource.Success(response.body()?.map { it.dtoToEntity().entityToDomain() }
+                    ?: emptyList())
             } else {
-                return Resource.Error("Http error: ${res.code()}")
+                Resource.Error("Http error: ${response.code()}")
             }
         } catch (e: HttpException) {
-            return Resource.Error("HTTP error: ${e.message()}")
+
+            Resource.Error("HTTP error: ${e.message()}")
         } catch (e: IOException) {
-            return Resource.Error("IO Error: ${e.message}")
+            Resource.Error("IO Error: ${e.message}")
         } catch (e: Exception) {
-            return Resource.Error("Unexpected error: ${e.message}")
+            Resource.Error("Unexpected error: ${e.message}")
         }
     }
-    override suspend fun postUnsyncedRemoteAppointments(appointmentList: List<Appointment>): Resource<MutableMap<Int, Any>> {
-        val results = mutableMapOf<Int, Any>()
-        for (appointment in appointmentList) {
-            try {
-                val response = api.postAppointments(appointment.domainToEntity().entityToDto())
-                if (response.isSuccessful) {
-                    results[response.body()!!.dtoToEntity().entityToDomain().id] = true
-                } else {
-                    results[response.body()!!.dtoToEntity().entityToDomain().id] = response.code()
-                }
-            } catch (e: HttpException) {
-                results[appointment.id] = e.code()
-            } catch (e: IOException) {
-                val errorMessage = e.message ?: "Unknown I/O error occurred"
-                results[appointment.id] = errorMessage
-            } catch (e: Exception) {
-                results[appointment.id] = "Unexpected error: ${e.message}"
+
+    override suspend fun addAppointmentToRemote(appointment: Appointment): Resource<Boolean> {
+        return try {
+            val response = api.postAppointments(appointment.domainToEntity().entityToDto())
+            if (response.isSuccessful) {
+                Resource.Success(true)
+            } else {
+                Resource.Error(response.message())
             }
+        } catch (e: HttpException) {
+            Resource.Error("HttpException: ${e.code()}: ${e.message() ?: "Unknown Error"}")
+        } catch (e: IOException) {
+            Resource.Error("IOException: ${e.cause}: ${e.message ?: "Unknown Error"}")
+        } catch (e: Exception) {
+            Resource.Error("Exception: ${e.cause}: ${e.message ?: "Unknown Error"}")
         }
-        return Resource.Success(results)
     }
-    override suspend fun deleteRemoteAppointments(idList: List<Int>): Resource<MutableMap<Int, Boolean>> {
-        val results = mutableMapOf<Int, Boolean>()
-        for (id in idList) {
-            try {
-                val response = api.deleteAppointment(id)
-                if (response.isSuccessful) {
-                    results[id] = true
-                } else {
-                    results[id] = false
-                }
-            } catch (e: HttpException) {
-                results[id] = false
-            } catch (e: IOException) {
-                results[id] = false
-            } catch (e: Exception) {
-                results[id] = false
+
+    override suspend fun deleteRemoteAppointment(id: Int): Resource<Boolean> {
+        return try {
+            val response = api.deleteAppointment(id)
+            if (response.isSuccessful) {
+                Resource.Success(true)
+            } else {
+                Resource.Error(response.message())
             }
+        } catch (e: HttpException) {
+            Resource.Error("HttpException: ${e.code()}: ${e.message() ?: "Unknown Error"}")
+        } catch (e: IOException) {
+            Resource.Error("IOException: ${e.cause}: ${e.message ?: "Unknown Error"}")
+        } catch (e: Exception) {
+            Resource.Error("Exception: ${e.cause}: ${e.message ?: "Unknown Error"}")
         }
-        return Resource.Success(results)
+    }
+
+    override suspend fun updateRemoteAppointment(appointment: Appointment): Resource<Boolean> {
+        return try {
+            val response = api.updateAppointment(appointment.id, appointment.domainToEntity().entityToDto())
+            if (response.isSuccessful) {
+                Resource.Success(true)
+            } else {
+                Resource.Error(response.message())
+            }
+        } catch (e: HttpException) {
+            Resource.Error("HttpException: ${e.code()}: ${e.message() ?: "Unknown Error"}")
+        } catch (e: IOException) {
+            Resource.Error("IOException: ${e.cause}: ${e.message ?: "Unknown Error"}")
+        } catch (e: Exception) {
+            Resource.Error("Exception: ${e.cause}: ${e.message ?: "Unknown Error"}")
+        }
     }
 
     // cache
@@ -165,7 +180,11 @@ class AppointmentRepositoryImpl @Inject constructor(
             Resource.Error("Exception: ${e.message ?: "Unknown Error"}")
         }
     }
-    override suspend fun addAppointmentToByDateCache(date: Int, appointmentId: Int): Resource<Boolean> {
+
+    override suspend fun addAppointmentToByDateCache(
+        date: Int,
+        appointmentId: Int
+    ): Resource<Boolean> {
         return try {
             Resource.Success(
                 cache.addAppointmentToByDateCache(
@@ -179,7 +198,11 @@ class AppointmentRepositoryImpl @Inject constructor(
             Resource.Error("Exception: ${e.message ?: "Unknown Error"}")
         }
     }
-    override suspend fun addDateToByAppointmentCache(appointmentId: Int, date: Int): Resource<Boolean> {
+
+    override suspend fun addDateToByAppointmentCache(
+        appointmentId: Int,
+        date: Int
+    ): Resource<Boolean> {
         return try {
             Resource.Success(
                 cache.addDateToByAppointmentCache(
@@ -193,7 +216,11 @@ class AppointmentRepositoryImpl @Inject constructor(
             Resource.Error("Exception: ${e.message ?: "Unknown Error"}")
         }
     }
-    override suspend fun addAppointmentToDeleteCache(id: Int, hasBeenSynced: Boolean): Resource<Boolean> {
+
+    override suspend fun addAppointmentToDeleteCache(
+        id: Int,
+        hasBeenSynced: Boolean
+    ): Resource<Boolean> {
         return try {
             cache.addAppointmentToDeleteCache(id, hasBeenSynced)
             Resource.Success(true)
@@ -203,6 +230,7 @@ class AppointmentRepositoryImpl @Inject constructor(
             Resource.Error("Exception: ${e.message ?: "Unknown Error"}")
         }
     }
+
     override suspend fun getAllAppointmentsFromCache(): Resource<Map<Int, Appointment>> {
         return try {
             Resource.Success(cache.getAllAppointmentsFromCache())
@@ -212,6 +240,7 @@ class AppointmentRepositoryImpl @Inject constructor(
             Resource.Error("Exception: ${e.message ?: "Unknown Error"}")
         }
     }
+
     override suspend fun getAllAppointmentsFromByDateCache(): Resource<Map<Int, List<Int>>> {
         return try {
             Resource.Success(cache.getAllAppointmentsFromByDateCache())
@@ -221,6 +250,7 @@ class AppointmentRepositoryImpl @Inject constructor(
             Resource.Error("Exception: ${e.message ?: "Unknown Error"}")
         }
     }
+
     override suspend fun getAppointmentById(id: Int): Resource<Appointment> {
         return try {
             cache.getAppointmentById(id)?.let {
@@ -232,6 +262,7 @@ class AppointmentRepositoryImpl @Inject constructor(
             Resource.Error("Exception: ${e.message ?: "Unknown Error"}")
         }
     }
+
     override suspend fun getDatesByAppointment(id: Int): Resource<List<Int>> {
         return try {
             Resource.Success(cache.getDatesByAppointment(id) ?: emptyList())
@@ -241,6 +272,7 @@ class AppointmentRepositoryImpl @Inject constructor(
             Resource.Error("Exception: ${e.message ?: "Unknown Error"}")
         }
     }
+
     override suspend fun getLastIdInCache(): Resource<Int> {
         return try {
             val lastId = cache.getLastIdInCache()
@@ -253,6 +285,7 @@ class AppointmentRepositoryImpl @Inject constructor(
             Resource.Error("Exception: ${e.message ?: "Unknown Error"}")
         }
     }
+
     override suspend fun getAppointmentListByDate(id: Int): Resource<List<Int>> {
         return try {
             Resource.Success(cache.getAppointmentListByDate(id) ?: emptyList())
@@ -262,6 +295,17 @@ class AppointmentRepositoryImpl @Inject constructor(
             Resource.Error("Exception: ${e.message ?: "Unknown Error"}")
         }
     }
+
+    override suspend fun getAppointmentsFromDeleteList(): Resource<Map<Int, Boolean>> {
+        return try {
+            Resource.Success(cache.getAppointmentsFromDeleteList())
+        } catch (e: IllegalArgumentException) {
+            Resource.Error("IllegalArgumentException: ${e.message ?: "Unknown Error"}")
+        } catch (e: Exception) {
+            Resource.Error("Exception: ${e.message ?: "Unknown Error"}")
+        }
+    }
+
     override suspend fun updateAppointmentInCache(appointment: Appointment): Resource<Boolean> {
         return try {
             if (cache.updateAppointmentInCache(appointment)) {
@@ -275,6 +319,7 @@ class AppointmentRepositoryImpl @Inject constructor(
             Resource.Error("Exception: ${e.message ?: "Unknown Error"}")
         }
     }
+
     override suspend fun deleteAppointmentFromCache(appointment: Appointment): Resource<Boolean> {
         return try {
             if (cache.deleteAppointmentFromCache(appointment)) {
@@ -288,6 +333,7 @@ class AppointmentRepositoryImpl @Inject constructor(
             Resource.Error("Exception: ${e.message ?: "Unknown Error"}")
         }
     }
+
     override suspend fun deleteAppointmentFromDateCache(id: Int): Resource<Boolean> {
         return try {
             if (cache.deleteAppointmentFromDateCache(id)) {
@@ -301,6 +347,7 @@ class AppointmentRepositoryImpl @Inject constructor(
             Resource.Error("Exception: ${e.message ?: "Unknown Error"}")
         }
     }
+
     override suspend fun deleteAppointmentFromByDateCache(date: Int, id: Int): Resource<Boolean> {
         return try {
             cache.deleteAppointmentFromByDateCache(date, id)
@@ -311,6 +358,21 @@ class AppointmentRepositoryImpl @Inject constructor(
             Resource.Error("Exception: ${e.message ?: "Unknown Error"}")
         }
     }
+
+    override suspend fun deleteAppointmentFromDeleteCache(id: Int): Resource<Boolean> {
+        return try {
+            if (cache.deleteAppointmentFromDeleteCache(id)) {
+                Resource.Success(true)
+            } else {
+                Resource.Error("Appointment not found.")
+            }
+        } catch (e: IllegalArgumentException) {
+            Resource.Error("IllegalArgumentException: ${e.message ?: "Unknown Error"}")
+        } catch (e: Exception) {
+            Resource.Error("Exception: ${e.message ?: "Unknown Error"}")
+        }
+    }
+
     override suspend fun clearCache(): Resource<Boolean> {
         return try {
             cache.clearCache()
@@ -325,6 +387,7 @@ class AppointmentRepositoryImpl @Inject constructor(
             Resource.Error("Exception: ${e.message ?: "Unknown Error"}")
         }
     }
+
     override suspend fun clearDateByAppointment(id: Int): Resource<Boolean> {
         return try {
             if (cache.clearDateByAppointmentById(id)) Resource.Success(true) else
@@ -333,6 +396,7 @@ class AppointmentRepositoryImpl @Inject constructor(
             Resource.Error("Exception: ${e.message ?: "Unknown Error"}")
         }
     }
+
     override suspend fun generateDateKey(day: Int, month: Int, year: Int): Int {
         return (day * 1000000 + month * 10000 + year)
     }

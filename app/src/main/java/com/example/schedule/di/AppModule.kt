@@ -17,13 +17,13 @@ import com.example.schedule.feature_schedule.domain.use_case.appointment.cache.G
 import com.example.schedule.feature_schedule.domain.use_case.appointment.cache.GetDatesFromCacheByAppointmentUseCase
 import com.example.schedule.feature_schedule.domain.use_case.appointment.cache.UpdateAppointmentInCacheUseCase
 import com.example.schedule.feature_schedule.domain.use_case.appointment.local.DeleteAppointmentFromRoomUseCase
-import com.example.schedule.feature_schedule.domain.use_case.appointment.remote.GetRemoteAppointmentsUseCase
+import com.example.schedule.feature_schedule.domain.use_case.appointment.remote.GetAppointmentsFromRemoteUseCase
 import com.example.schedule.feature_schedule.domain.use_case.appointment.local.GetAllAppointmentsFromRoomUseCase
 import com.example.schedule.feature_schedule.domain.use_case.appointment.local.AddAppointmentToRoomUseCase
 import com.example.schedule.feature_schedule.domain.use_case.appointment.local.UpdateAppointmentInRoomUseCase
 import com.example.schedule.feature_schedule.domain.use_case.appointment.UpsertRemoteAppointmentsIntoRoomUseCase
-import com.example.schedule.feature_schedule.domain.use_case.appointment.remote.DeleteRemoteAppointmentUseCase
-import com.example.schedule.feature_schedule.domain.use_case.appointment.remote.PostUnsyncedAppointmentsUseCase
+import com.example.schedule.feature_schedule.domain.use_case.appointment.remote.DeleteAppointmentFromRemoteUseCase
+import com.example.schedule.feature_schedule.domain.use_case.appointment.PostUnsyncedAppointmentInRemoteUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -141,9 +141,9 @@ object AppModule {
             upsertRemoteAppointmentsIntoRoomUseCase = UpsertRemoteAppointmentsIntoRoomUseCase(repository),
 
             // remote
-            deleteRemoteAppointmentUseCase = DeleteRemoteAppointmentUseCase(repository),
-            getRemoteAppointmentsUseCase = GetRemoteAppointmentsUseCase(repository),
-            postRemoteAppointmentUseCase = PostUnsyncedAppointmentsUseCase(repository)
+            deleteAppointmentFromRemoteUseCase = DeleteAppointmentFromRemoteUseCase(repository),
+            getAppointmentsFromRemoteUseCase = GetAppointmentsFromRemoteUseCase(repository),
+            postRemoteAppointmentUseCase = PostUnsyncedAppointmentInRemoteUseCase(repository)
         )
     }
 }

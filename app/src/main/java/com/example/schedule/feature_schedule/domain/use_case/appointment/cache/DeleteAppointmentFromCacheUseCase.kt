@@ -31,7 +31,7 @@ class DeleteAppointmentFromCacheUseCase @Inject constructor(
         }
 
         if (response is Resource.Error)
-            return Resource.Error("Cannot delete appointment from database")
+            return response
 
         try {
             coroutineScope {
@@ -44,7 +44,8 @@ class DeleteAppointmentFromCacheUseCase @Inject constructor(
                 deleteByDay.await()
                 deleteFromCache.await()
             }
-            logger.info("Appointment deleted successfully from cache.")
+            repository.addAppointmentToDeleteCache(appointment.id, appointment.hasBeenSynced)
+            logger.info("Appointment successfully deleted from cache.")
             return Resource.Success(true)
         } catch (e: Exception) {
             addAppointmentToCacheUseCase.invoke(appointment)
