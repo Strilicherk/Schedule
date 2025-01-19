@@ -15,6 +15,8 @@ class GetAppointmentFromCacheByIdUseCase @Inject constructor(
 ) {
     suspend operator fun invoke(id: Int): Resource<Appointment> {
         logger.info("Fetching appointment from cache by ID: $id")
-        return repository.getAppointmentById(id)
+        val res = repository.getAppointmentById(id)
+        if (res is Resource.Error) logger.error(res.message) else logger.info("Successfully fetched appointment from cache by ID: $id")
+        return res
     }
 }

@@ -6,6 +6,7 @@ import com.example.schedule.feature_schedule.domain.model.Appointment
 interface AppointmentRepository {
     // local
     suspend fun addAppointmentToRoom(appointment: Appointment): Resource<Boolean>
+    suspend fun clearAppointmentTable(): Resource<Boolean>
     suspend fun getAllAppointmentsFromRoom(): Resource<List<Appointment>>
     suspend fun getUnsyncedAppointmentsFromRoom(): Resource<List<Appointment>>
     suspend fun updateAppointmentInRoom(appointment: Appointment): Resource<Boolean>

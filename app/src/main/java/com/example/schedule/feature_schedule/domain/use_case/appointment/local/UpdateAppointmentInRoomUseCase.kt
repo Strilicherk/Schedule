@@ -6,6 +6,7 @@ import com.example.schedule.feature_schedule.domain.repository.AppointmentReposi
 import com.example.schedule.feature_schedule.domain.use_case.appointment.ValidateAppointmentInfosUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.slf4j.Logger
 import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -13,14 +14,18 @@ import javax.inject.Singleton
 @Singleton
 class UpdateAppointmentInRoomUseCase @Inject constructor(
     private val repository: AppointmentRepository,
-    private val validateAppointmentInfosUseCase: ValidateAppointmentInfosUseCase
+    private val validateAppointmentInfosUseCase: ValidateAppointmentInfosUseCase,
+    private val logger: Logger
 ) {
     suspend operator fun invoke(appointment: Appointment): Resource<Boolean> {
         val validatedAppointment = validateAppointmentInfosUseCase.invoke(appointment)
-        return if (validatedAppointment is Resource.Success) {
-            repository.updateAppointmentInRoom(appointment)
+        if (validatedAppointment is Resource.Success) {
+            val res = repository.updateAppointmentInRoom(appointment)
+            if (res is Resource.Error) logger.error(res.message) else logger.info("Successfully updated appointment in room.")
+            return res
         } else {
-            Resource.Error("${validatedAppointment.message}")
+            logger.error(validatedAppointment.message)
+            return Resource.Error("${validatedAppointment.message}")
         }
     }
 }

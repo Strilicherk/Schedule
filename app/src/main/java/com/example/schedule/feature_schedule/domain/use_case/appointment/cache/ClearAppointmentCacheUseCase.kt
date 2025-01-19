@@ -3,8 +3,6 @@ package com.example.schedule.feature_schedule.domain.use_case.appointment.cache
 import com.example.schedule.feature_schedule.common.Resource
 import com.example.schedule.feature_schedule.domain.repository.AppointmentRepository
 import org.slf4j.Logger
-import org.slf4j.LoggerFactory
-import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -15,6 +13,8 @@ class ClearAppointmentCacheUseCase @Inject constructor(
 ) {
     suspend operator fun invoke(): Resource<Boolean> {
         logger.info("Clearing appointment cache.")
-        return repository.clearCache()
+        val res = repository.clearCache()
+        if (res is Resource.Error) logger.error(res.message) else logger.info("Successfully cleared appointment cache")
+        return res
     }
 }

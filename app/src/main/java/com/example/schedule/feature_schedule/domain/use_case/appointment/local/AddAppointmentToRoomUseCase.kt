@@ -24,7 +24,9 @@ class AddAppointmentToRoomUseCase @Inject constructor(
         val validatedAppointment = result.data!!
 
         logger.info("Adding appointment to Room.")
-        return repository.addAppointmentToRoom(validatedAppointment)
+        val res = repository.addAppointmentToRoom(validatedAppointment)
+        if (res is Resource.Error) logger.error(res.message) else logger.info("Successfully added appointment to Room.")
+        return res
     }
 }
 

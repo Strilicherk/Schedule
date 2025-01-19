@@ -13,13 +13,13 @@ class DeleteAppointmentFromRoomUseCase @Inject constructor(
 ) {
     suspend operator fun invoke(id: Int): Resource<Boolean> {
         logger.info("Trying to delete appointment in Room")
-        val response = repository.deleteAppointmentFromRoom(id)
-        return if (response is Resource.Success) {
+        val res = repository.deleteAppointmentFromRoom(id)
+        return if (res is Resource.Success) {
             logger.info("Appointment deleted")
             Resource.Success(true)
         } else {
-            logger.error("Unable to delete appointment: ${response.message}")
-            Resource.Error("${response.message}")
+            logger.error("Unable to delete appointment: ${res.message}")
+            Resource.Error("${res.message}")
         }
     }
 }

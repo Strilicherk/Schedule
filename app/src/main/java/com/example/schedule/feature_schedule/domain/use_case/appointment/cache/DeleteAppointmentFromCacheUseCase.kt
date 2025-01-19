@@ -23,15 +23,19 @@ class DeleteAppointmentFromCacheUseCase @Inject constructor(
     suspend operator fun invoke(appointment: Appointment): Resource<Boolean> {
         logger.info("Deleting appointment from cache.")
         val dateList = repository.getDatesByAppointment(appointment.id).data!!
-        if (dateList.isEmpty())
+        if (dateList.isEmpty()) {
+            logger.error("No dates found for appointment ID: ${appointment.id}")
             return Resource.Error("No dates found for appointment ID: ${appointment.id}")
+        }
 
         val response = withContext(Dispatchers.IO) {
             deleteAppointmentFromRoomUseCase.invoke(appointment.id)
         }
 
-        if (response is Resource.Error)
+        if (response is Resource.Error) {
+            logger.error(response.message)
             return response
+        }
 
         try {
             coroutineScope {

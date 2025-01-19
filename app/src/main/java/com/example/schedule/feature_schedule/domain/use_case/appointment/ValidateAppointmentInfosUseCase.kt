@@ -16,20 +16,20 @@ class ValidateAppointmentInfosUseCase @Inject constructor(
         var appointmentToUpsert = appointment
         logger.info("Validating appointment with title: ${appointmentToUpsert.title}")
 
-        require(appointmentToUpsert.title.isBlank()) {
+        if (appointmentToUpsert.title.isBlank()) {
             val errorMessage = "Appointment title cannot be empty"
             logger.error(errorMessage)
-            return Resource.Error("Appointment title cannot be empty")
+            return Resource.Error(errorMessage)
         }
-        require(appointmentToUpsert.startDate.isAfter(appointmentToUpsert.endDate)) {
+        if (appointmentToUpsert.startDate.isAfter(appointmentToUpsert.endDate)) {
             val errorMessage = "Appointment start date must be before end date"
             logger.error(errorMessage)
-            return Resource.Error("Appointment start date must be before end date")
+            return Resource.Error(errorMessage)
         }
-        require(appointmentToUpsert.startTime.isAfter(appointmentToUpsert.endTime)) {
+        if (appointmentToUpsert.startTime.isAfter(appointmentToUpsert.endTime)) {
             val errorMessage = "Appointment start time must be before end time"
             logger.error(errorMessage)
-            return Resource.Error("Appointment start time must be before end time")
+            return Resource.Error(errorMessage)
         }
 
         logger.info("Fetching last ID from repository for new appointment")
@@ -41,7 +41,7 @@ class ValidateAppointmentInfosUseCase @Inject constructor(
             }
         } else {
             logger.error("Error fetching last ID: ${result.message}")
-            return Resource.Error("${result.message}")
+            return Resource.Error(result.message ?: "Unknown error")
         }
 
         return Resource.Success(appointmentToUpsert)

@@ -53,6 +53,7 @@ android {
         schemaDirectory("$projectDir/schemas")
     }
 
+
 }
 
 dependencies {
@@ -101,6 +102,7 @@ dependencies {
     testImplementation(libs.junit.jupiter.api)
     testImplementation(libs.junit.jupiter.engine)
     testImplementation(kotlin("test"))
+    testImplementation(libs.slf4j.simple)
 
     // Mockk
     testImplementation(libs.test.mockk)
@@ -114,5 +116,6 @@ dependencies {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+    systemProperty("org.slf4j.simpleLogger.defaultLogLevel", "debug")
 }
 

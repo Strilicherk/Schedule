@@ -8,14 +8,13 @@ import com.example.schedule.feature_schedule.domain.use_case.appointment.local.U
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.slf4j.Logger
-import org.slf4j.LoggerFactory
-import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class UpdateAppointmentInCacheUseCase @Inject constructor(
     private val repository: AppointmentRepository,
+    private val addAppointmentToCacheUseCase: AddAppointmentToCacheUseCase,
     private val updateAppointmentInRoomUseCase: UpdateAppointmentInRoomUseCase,
     private val getDatesFromCacheByAppointmentUseCase: GetDatesFromCacheByAppointmentUseCase,
     private val getAppointmentFromCacheByIdUseCase: GetAppointmentFromCacheByIdUseCase,
@@ -31,18 +30,22 @@ class UpdateAppointmentInCacheUseCase @Inject constructor(
         }
 
         if (updateAppointmentInRoom is Resource.Success) {
-            val oldAppointment = getAppointmentFromCacheByIdUseCase.invoke(validatedAppointment.id).data
-                ?: return Resource.Error("Old appointment not found")
-
-            if (!validatedAppointment.compareAppointmentDates(oldAppointment)) {
-                val oldDatesList = getDatesFromCacheByAppointmentUseCase.invoke(validatedAppointment.id).data
-                    ?: emptyList()
-                clearAndRegenerateDates(validatedAppointment, oldDatesList)
-                repository.updateAppointmentInCache(validatedAppointment)
+            val oldAppointment = getAppointmentFromCacheByIdUseCase.invoke(validatedAppointment.id)
+            if (oldAppointment is Resource.Error) {
+                logger.warn("Old appointment doest not exist in cache anymore, changing to create operation instead an update.")
+                return addAppointmentToCacheUseCase.invoke(validatedAppointment)
+            } else {
+                if (!validatedAppointment.compareAppointmentDates(oldAppointment.data!!)) {
+                    val oldDatesList = getDatesFromCacheByAppointmentUseCase.invoke(validatedAppointment.id).data
+                        ?: emptyList()
+                    clearAndRegenerateDates(validatedAppointment, oldDatesList)
+                    repository.updateAppointmentInCache(validatedAppointment)
+                }
+                logger.info("Appointment updated successfully.")
+                return Resource.Success(true)
             }
-            logger.info("Appointment updated successfully.")
-            return Resource.Success(true)
         } else {
+            logger.info("Successfully updated appointment in room.")
             return updateAppointmentInRoom
         }
     }

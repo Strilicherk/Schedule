@@ -5,7 +5,9 @@ import com.example.schedule.feature_schedule.domain.model.Appointment
 import com.example.schedule.feature_schedule.domain.repository.AppointmentRepository
 import org.slf4j.Logger
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class DeleteAppointmentFromRemoteUseCase @Inject constructor(
     private val repository: AppointmentRepository,
     private val logger: Logger

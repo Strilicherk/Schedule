@@ -17,6 +17,8 @@ class GetAllAppointmentsFromRoomUseCase @Inject constructor(
 ) {
     suspend operator fun invoke(): Resource<List<Appointment>> {
         logger.info("Fetching all appointments from Room")
-        return repository.getAllAppointmentsFromRoom()
+        val res = repository.getAllAppointmentsFromRoom()
+        if (res is Resource.Error) logger.error(res.message) else logger.info("Appointments successfully fetched")
+        return res
     }
 }

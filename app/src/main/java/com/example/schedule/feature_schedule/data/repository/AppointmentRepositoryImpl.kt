@@ -43,6 +43,19 @@ class AppointmentRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun clearAppointmentTable(): Resource<Boolean> {
+        return try {
+            dao.clearAppointmentTable()
+            if (dao.selectAppointments().isEmpty()) {
+                Resource.Success(true)
+            } else {
+                Resource.Error("Unable to clear local database")
+            }
+        } catch (e: Exception) {
+            Resource.Error("Exception: ${e.message ?: "Unknown Error"}")
+        }
+    }
+
     override suspend fun getAllAppointmentsFromRoom(): Resource<List<Appointment>> {
         return try {
             val appointments = dao.selectAppointments().map { it.entityToDomain() }

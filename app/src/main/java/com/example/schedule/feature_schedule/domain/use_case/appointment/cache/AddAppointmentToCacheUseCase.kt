@@ -26,15 +26,18 @@ class AddAppointmentToCacheUseCase @Inject constructor(
     suspend operator fun invoke(appointment: Appointment): Resource<Boolean> {
         logger.info("Validating appointment information.")
         val result = validateAppointmentInfosUseCase.invoke(appointment)
-        if (result is Resource.Error) return Resource.Error(result.message ?: "Validation failed")
+        if (result is Resource.Error) {
+            logger.error(result.message)
+            return Resource.Error(result.message ?: "Validation failed")
+        }
         val appointmentToCreate = result.data!!
 
         logger.info("Creating appointment in Room.")
         val createAppointmentInRoom = withContext(Dispatchers.IO) {
-            addAppointmentToRoomUseCase.invoke(appointmentToCreate).data
+            addAppointmentToRoomUseCase.invoke(appointmentToCreate)
         }
 
-        return if (createAppointmentInRoom == true) {
+        return if (createAppointmentInRoom is Resource.Success) {
             logger.info("Adding appointment to cache.")
             repository.addAppointmentToCache(appointmentToCreate)
             val dateRange = generateSequence(appointment.startDate) { current ->
@@ -49,7 +52,7 @@ class AddAppointmentToCacheUseCase @Inject constructor(
             logger.info("Appointment added successfully to cache.")
             Resource.Success(true)
         } else {
-            logger.error("Failed to create appointment in Room.")
+            logger.error(createAppointmentInRoom.message)
             Resource.Error("Failed to create appointment in Room.")
         }
     }
