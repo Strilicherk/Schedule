@@ -1,6 +1,5 @@
 package com.example.schedule.feature_schedule.presentation.view_add_edit_appointment
 
-import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
