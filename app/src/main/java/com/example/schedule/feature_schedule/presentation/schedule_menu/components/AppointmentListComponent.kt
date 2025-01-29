@@ -31,7 +31,6 @@ import java.time.LocalTime
 
 @Composable
 fun AppointmentListComponent(viewModel: ScheduleViewModel = hiltViewModel()) {
-    // Lista de compromissos
     val appointmentCache = listOf(
         Appointment(
             id = 1,
@@ -72,7 +71,77 @@ fun AppointmentListComponent(viewModel: ScheduleViewModel = hiltViewModel()) {
             endDate = LocalDate.of(2025, 1, 24),
             startTime = LocalTime.of(18, 0),
             endTime = LocalTime.of(22, 0)
-        )
+        ),
+        Appointment(
+            id = 4,
+            title = "Aniversário",
+            notes = "Festa de aniversário",
+            color = 0xFFFF00,
+            startDate = LocalDate.of(2025, 1, 24),
+            endDate = LocalDate.of(2025, 1, 24),
+            startTime = LocalTime.of(18, 0),
+            endTime = LocalTime.of(22, 0)
+        ),
+        Appointment(
+            id = 4,
+            title = "Aniversário",
+            notes = "Festa de aniversário",
+            color = 0xFFFF00,
+            startDate = LocalDate.of(2025, 1, 24),
+            endDate = LocalDate.of(2025, 1, 24),
+            startTime = LocalTime.of(18, 0),
+            endTime = LocalTime.of(22, 0)
+        ),
+        Appointment(
+            id = 4,
+            title = "Aniversário",
+            notes = "Festa de aniversário",
+            color = 0xFFFF00,
+            startDate = LocalDate.of(2025, 1, 24),
+            endDate = LocalDate.of(2025, 1, 24),
+            startTime = LocalTime.of(18, 0),
+            endTime = LocalTime.of(22, 0)
+        ),
+        Appointment(
+            id = 4,
+            title = "Aniversário",
+            notes = "Festa de aniversário",
+            color = 0xFFFF00,
+            startDate = LocalDate.of(2025, 1, 24),
+            endDate = LocalDate.of(2025, 1, 24),
+            startTime = LocalTime.of(18, 0),
+            endTime = LocalTime.of(22, 0)
+        ),
+        Appointment(
+            id = 4,
+            title = "Aniversário",
+            notes = "Festa de aniversário",
+            color = 0xFFFF00,
+            startDate = LocalDate.of(2025, 1, 24),
+            endDate = LocalDate.of(2025, 1, 24),
+            startTime = LocalTime.of(18, 0),
+            endTime = LocalTime.of(22, 0)
+        ),
+        Appointment(
+            id = 4,
+            title = "Aniversário",
+            notes = "Festa de aniversário",
+            color = 0xFFFF00,
+            startDate = LocalDate.of(2025, 1, 24),
+            endDate = LocalDate.of(2025, 1, 24),
+            startTime = LocalTime.of(18, 0),
+            endTime = LocalTime.of(22, 0)
+        ),
+        Appointment(
+            id = 4,
+            title = "Aniversário",
+            notes = "Festa de aniversário",
+            color = 0xFFFF00,
+            startDate = LocalDate.of(2025, 1, 24),
+            endDate = LocalDate.of(2025, 1, 24),
+            startTime = LocalTime.of(18, 0),
+            endTime = LocalTime.of(22, 0)
+        ),
     )
 
     LazyColumn(
@@ -88,7 +157,6 @@ fun AppointmentListComponent(viewModel: ScheduleViewModel = hiltViewModel()) {
 
 @Composable
 fun AppointmentRow(appointment: Appointment) {
-    // Defina as cores das notas
     val noteColors = mapOf(
         0xFF0000 to Color.Red,
         0x00FF00 to Color.Green,
@@ -98,12 +166,11 @@ fun AppointmentRow(appointment: Appointment) {
 
     Row(
         modifier = Modifier
-            .padding(start = 10.dp, end = 10.dp, bottom = 20.dp)
+            .padding(start = 10.dp, end = 10.dp, bottom = 7.dp)
             .fillMaxWidth()
             .height(70.dp)
             .background(MaterialTheme.colorScheme.background, RoundedCornerShape(20.dp))
     ) {
-        // Coluna para a cor da nota
         Column(
             modifier = Modifier
                 .padding(top = 17.dp)
@@ -119,8 +186,6 @@ fun AppointmentRow(appointment: Appointment) {
                     .align(Alignment.End)
             )
         }
-
-        // Coluna para o título e notas
         Column(
             modifier = Modifier
                 .padding(top = 10.dp, bottom = 10.dp, start = 10.dp)

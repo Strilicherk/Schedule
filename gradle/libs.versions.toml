@@ -1,4 +1,5 @@
 [versions]
+accompanistSystemuicontroller = "0.31.1-alpha"
 agp = "8.8.0"
 converterGson = "2.9.0"
 foundation = "1.7.5"
@@ -29,6 +30,7 @@ junitJupiterVersion = "5.8.1"
 
 
 [libraries]
+accompanist-systemuicontroller = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "accompanistSystemuicontroller" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-foundation = { module = "androidx.compose.foundation:foundation", version.ref = "foundation" }
 androidx-foundation-v176 = { module = "androidx.compose.foundation:foundation", version.ref = "foundationVersion" }

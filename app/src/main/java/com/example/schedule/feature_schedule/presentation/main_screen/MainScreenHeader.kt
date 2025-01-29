@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color.Companion.White
@@ -18,9 +19,10 @@ import com.example.schedule.feature_schedule.presentation.schedule_menu.Schedule
 fun MainScreenHeader(
     scheduleViewModel: ScheduleViewModel = hiltViewModel()
 ) {
-    val scheduleState = scheduleViewModel.state.value
-    val monthName = scheduleState.currentMonth.name.substring(0, 3).lowercase()
-        .replaceFirstChar { it.uppercase() } + " " + scheduleState.currentYear
+    val scheduleState = scheduleViewModel.state.collectAsState()
+    val scheduleStateValue = scheduleState.value
+    val monthName = scheduleStateValue.currentMonth.name.substring(0, 3).lowercase()
+        .replaceFirstChar { it.uppercase() } + " " + scheduleStateValue.currentYear
 
     Row(
         modifier = Modifier

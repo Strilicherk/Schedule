@@ -5,5 +5,5 @@ import java.time.Month
 
 sealed class ScheduleEvents {
     data class SelectDay(val date: LocalDate): ScheduleEvents()
-    data class UpdateViewingDate(val year: Int, val month: Month): ScheduleEvents()
+    data class UpdateViewingDate(val year: Int, val month: Month, val currentIndex: Int): ScheduleEvents()
 }
