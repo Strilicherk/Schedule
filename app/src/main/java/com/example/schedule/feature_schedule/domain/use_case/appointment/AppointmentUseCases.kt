@@ -54,5 +54,6 @@ data class AppointmentUseCases @Inject constructor(
     val upsertUnsyncedAppointmentsToRemoteUseCase: UpsertUnsyncedAppointmentsToRemoteUseCase,
 
     //general
-    val validateAppointmentInfosUseCase: ValidateAppointmentInfosUseCase
+    val validateAppointmentInfosUseCase: ValidateAppointmentInfosUseCase,
+    val changeVisibleMonthUseCase: ChangeVisibleMonthUseCase
 )

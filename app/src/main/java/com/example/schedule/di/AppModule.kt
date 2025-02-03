@@ -8,6 +8,7 @@ import com.example.schedule.feature_schedule.data.data_source.remote.Appointment
 import com.example.schedule.feature_schedule.data.repository.AppointmentRepositoryImpl
 import com.example.schedule.feature_schedule.domain.repository.AppointmentRepository
 import com.example.schedule.feature_schedule.domain.use_case.appointment.AppointmentUseCases
+import com.example.schedule.feature_schedule.domain.use_case.appointment.ChangeVisibleMonthUseCase
 import com.example.schedule.feature_schedule.domain.use_case.appointment.cache.AddAppointmentToCacheUseCase
 import com.example.schedule.feature_schedule.domain.use_case.appointment.cache.ClearAppointmentCacheUseCase
 import com.example.schedule.feature_schedule.domain.use_case.appointment.ValidateAppointmentInfosUseCase
@@ -305,9 +306,19 @@ object AppModule {
 
     @Provides
     @Singleton
+    fun providesChangeVisibleMonth(
+        repository: AppointmentRepository,
+        logger: Logger
+    ): ChangeVisibleMonthUseCase {
+        return ChangeVisibleMonthUseCase(repository, logger)
+    }
+
+    @Provides
+    @Singleton
     fun provideAppointmentUseCases(
         //general
         validateAppointmentInfosUseCase: ValidateAppointmentInfosUseCase,
+        changeVisibleMonthUseCase: ChangeVisibleMonthUseCase,
 
         //cache
         addAppointmentToCacheUseCase: AddAppointmentToCacheUseCase,
@@ -368,7 +379,8 @@ object AppModule {
             upsertUnsyncedAppointmentsToRemoteUseCase = upsertUnsyncedAppointmentsToRemoteUseCase,
 
             //general
-            validateAppointmentInfosUseCase = validateAppointmentInfosUseCase
+            validateAppointmentInfosUseCase = validateAppointmentInfosUseCase,
+            changeVisibleMonthUseCase = changeVisibleMonthUseCase
         )
     }
 }

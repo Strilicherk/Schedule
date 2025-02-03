@@ -3,11 +3,12 @@ package com.example.schedule.ui.theme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color.Companion.Black
 import androidx.compose.ui.graphics.Color.Companion.White
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 private val DarkColorScheme = darkColorScheme(
-    primary = CustomBlack,
+    primary = Black,
     secondary = CustomCarbon,
     tertiary = CustomGray,
     background = CustomCarbon,
@@ -23,7 +24,7 @@ fun CalendarTheme(content: @Composable () -> Unit) {
     val colors = DarkColorScheme
 
     systemUiController.setStatusBarColor(
-        color = colors.background,
+        color = Black,
         darkIcons = false
     )
 

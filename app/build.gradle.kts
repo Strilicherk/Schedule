@@ -114,6 +114,10 @@ dependencies {
 
     // Logger
     implementation(libs.microutils.kotlin.logging.jvm)
+
+    // Navigation
+    implementation(libs.androidx.navigation.compose.v286)
+    implementation(libs.accompanist.navigation.animation)
 }
 
 tasks.withType<Test> {
